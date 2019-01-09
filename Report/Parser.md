@@ -43,13 +43,52 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 | Left-recursion rule           | Alternative non-left recursion rule  |
 |:-------------| :-----|
-| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| **ε** |
-| param-list → param-list , param \| param | param-list → param param-list-a <br> param-list-a → , param param-list-a \| **ε** |
-| statement-list → statement-list statement \| **ε** | statement-list → statement-list-a <br> statement-list-a → statement statement-list → statement-list-a \| **ε** |
-| case-stmts → case-stmts case-stmt \| **ε** | case-stmts → case-stmts-a <br> case-stmts-a → case-stmt \| **ε** |
+| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration declaration-list \| declaration |
+| param-list → param-list **,** param \| param | param-list → param param-list-a <br> param-list-a → **,** param param-list-a \| **ε** |
+| statement-list → statement-list statement \| **ε** | statement-list → statement statement-list \| **ε**  |
+| case-stmts → case-stmts case-stmt \| **ε** | case-stmts → case-stmt case-stmts \| **ε**|
 | additive-expression → additive-expression addop term \| term | additive-expression → term additive-expression-a <br> additive-expression-a → addop term additive-expression-a \| **ε** |
 | term → term * factor \| factor | term → factor term-a <br> term-a → * factor term-a \| **ε** |
-| arg-list → arg-list , expression \| expression | arg-list → expression arg-list-a <br> arg-list-a → , expression arg-list-a \| **ε** |
+| arg-list → arg-list **,** expression \| expression | arg-list → expression arg-list-a <br> arg-list-a → **,** expression arg-list-a \| **ε** |
+
+بنابراین قواعد پس از حذف چپ‌گردی آشکار به صورت زیر خواهد بود.
+
+1. program → declaration-list **EOF**
+2. declaration-list → declaration declaration-list | declaration
+3. declaration → var-declaration | fun-declaration
+4. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
+5. type-specifier → **int** | **void**
+6. fun-declaration → type-specifier **ID (** params **)** compound-stmt
+7. params → param-list | **void**
+8. param-list → param param-list-a 
+9. param-list-a → **,** param param-list-a | **ε** 
+10. param → type-specifier **ID** | type-specifier **ID []**
+11. compound-stms → **{** declaration-list statement-list **}**
+12. statement-list → statement statement-list | **ε** 
+13. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+14. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+15. selection-stmt → **if (** expression **)** statement **else** statement
+16. iteration-stmt → **return ;** | **return** expression **;**
+17. return-stmt → **return ;** | **return** expression **;**
+18. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+19. case-stmts → case-stmt case-stmts | **ε**
+20. case-stmt → **case NUM :** statement-list
+21. default-stmt → **default :** statement-list | **ε**
+22. expression → var **=** expression | simple-expression
+23. var → **ID** | **ID [** expression **]**
+24. simple-expression → additive-expression relop additive-expression | additive-expression
+25. relop → **<** | **==**
+26. additive-expression → term additive-expression-a 
+27. additive-expression-a → addop term additive-expression-a | **ε** 
+28. addop → **+** | **-**
+29. term → term * factor | factor
+30. term → factor term-a
+31. term-a → * factor term-a \| **ε**
+32. call → **ID (** args **)**
+33. args → arg-list | **ε**
+34. arg-list → expression arg-list-a 
+35. arg-list-a → **,** expression arg-list-a | **ε**
+
 
 
 
