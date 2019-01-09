@@ -40,9 +40,8 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 </div>
 
+
 | Left-recursion rule           | Alternative non-left recursion rule  |
-|-------------:| -----:|
+|:-------------| :-----|
 | declaration-list → declaration-list declaration \| declaration | declaration-list → declaration \| declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| ε |
-
-
 
