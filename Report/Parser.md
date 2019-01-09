@@ -22,7 +22,9 @@ A → Aα1|Aα2|...|Aαm|β1|β2|...|βn
 ```
 
 <div dir="rtl" align="right">
+  
 در قواعد فوق، فرض بر این است که `βi` نباید با `A` شروع شوند و هیچ کدام از `αi` نباید `ε` باشند. در این صورت می‌توان قواعد زیر را به جای قواعد چپ‌گرد فوق به کار برد:
+
 </div>
 
 ```
@@ -31,13 +33,16 @@ A' → α1A'|α2A'|...|αmA'|ε
 ```
 
 <div dir="rtl" align="right">
+  
 این گونه چپ گردی‌ها را چپ‌گردی آشکار `(Explicit Left Recursion)` می‌گویند. 
 
 ممکن است، چپ‌گردی در بیش از یک قدم ظاهر شود، به آن چپ‌گردی ضمنی گویند. به عنوان مثال، گرامر زیر دارای چپ‌گردی ضمنی است. 
+
 </div>
-| #        | Left-recursion rule           | Alternative non-left recursion rule  |
-| ------------- |:-------------:| -----:|
-| 23      | declaration-list → declaration-list declaration \| declaration | declaration-list → declaration \| declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| ε |
+
+| Left-recursion rule           | Alternative non-left recursion rule  |
+|-------------:| -----:|
+| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration \| declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| ε |
 
 
 
