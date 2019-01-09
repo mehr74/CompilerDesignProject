@@ -43,5 +43,13 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 | Left-recursion rule           | Alternative non-left recursion rule  |
 |:-------------| :-----|
-| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration \| declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| ε |
+| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| **ε** |
+| param-list → param-list , param \| param | param-list → param param-list-a <br> param-list-a → , param param-list-a \| **ε** |
+| statement-list → statement-list statement \| **ε** | statement-list → statement-list-a <br> statement-list-a → statement statement-list → statement-list-a \| **ε** |
+| case-stmts → case-stmts case-stmt \| **ε** | case-stmts → case-stmts-a <br> case-stmts-a → case-stmt \| **ε** |
+| additive-expression → additive-expression addop term \| term | additive-expression → term additive-expression-a <br> additive-expression-a → addop term additive-expression-a \| **ε** |
+| term → term * factor \| factor | term → factor term-a <br> term-a → * factor term-a \| **ε** |
+| arg-list → arg-list , expression \| expression | arg-list → expression arg-list-a <br> arg-list-a → , expression arg-list-a \| **ε** |
+
+
 
