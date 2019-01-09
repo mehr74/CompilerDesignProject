@@ -22,7 +22,7 @@
 22. var → **ID** | **ID [** expression **]**
 23. simple-expression → additive-expression relop additive-expression | additive-expression
 24. relop → **<** | **==**
-25. additive-expression → additive-expressio addop term | term
+25. additive-expression → additive-expression addop term | term
 26. addop → **+** | **-**
 27. term → term * factor | factor
 28. factor → **(** expression **)** | var | call | **NUM**
