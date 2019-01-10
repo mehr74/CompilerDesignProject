@@ -1,0 +1,42 @@
+program → declaration-list EOF
+declaration-list → declaration declaration-list-a
+declaration-list-a → declaration declaration-list-a | ε
+declaration → var-declaration | fun-declaration
+var-declaration → type-specifier ID var-declaration-a
+var-declaration-a → ; | [ NUM ] ;
+type-specifier → int | void
+fun-declaration → type-specifier ID ( params ) compound-stmt
+params → param-list | void
+param-list → param param-list-a
+param-list-a → , param param-list-a | ε
+param → type-specifier ID param-a
+param-a → ε | []
+compound-stmt → { declaration-list statement-list }
+statement-list → statement statement-list | ε
+statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+expression-stmt → expression ; | continue ; | break ; | ;
+selection-stmt → if ( expression ) statement else statement
+iteration-stmt → while ( expression ) statement
+return-stmt → return return-stmt-a
+return-stmt-a → ; | expression ;
+switch-stmt → switch ( expression ) { case-stmts default-stmt }
+case-stmts → case-stmt case-stmts | ε
+case-stmt → case NUM : statement-list
+default-stmt → default : statement-list | ε
+expression → var = expression | simple-expression
+var → ID var-a
+var-a → ε | [ expression ]
+simple-expression → additive-expression simple-expression-a
+simple-expression-a → relop additive-expression | ε
+relop → < | ==
+additive-expression → term additive-expression-a
+additive-expression-a → addop term additive-expression-a | ε
+addop → + | -
+term → factor term-a
+term-a → * factor term-a | ε
+factor → ( expression ) | var | call | NUM
+call → ID ( args )
+args → arg-list | ε
+arg-list → expression arg-list-a
+arg-list-a → , expression arg-list-a | ε
+
