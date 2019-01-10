@@ -257,9 +257,56 @@ end
 | Left-factor rule           | Alternative non-left-factor rule  |
 |:-------------| :-----|
 | declaration → var-declaration \| fun-declaration <br> var-declaration → type-specifier **ID** var-declaration-a <br> fun-declaration → type-specifier **ID (** params **)** compound-stmt | declaration → type-specifier **ID** declaration-a <br> declaration-a → var-declaration-a \| fun-declaration <br> fun-declaration → **(** params **)** compound-stmt |
-| params → param-list \| **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** \| **void** | params → **void** params-a \| **int ID** param-a param-list-a <br> params-a → **ID** param-a param-list-a \| **ε** <br> param → type-specifier ID param-a |
+| params → param-list \| **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** \| **void** | params → **void** params-a \| **int ID** param-a param-list-a <br> params-a → **ID** param-a param-list-a \| **ε** <br> param → type-specifier ID param-a <br> type-specifier → **int** \| **void** |
 | factor → **(** expression **)** \| var \| call \| **NUM** <br> call → **ID (** args **)** <br> var → **ID** var-a  | factor → **(** expression **)** \| **ID** factor-a \| **NUM** <br> factor-a → var-a \| call <br> call → **(** args **)** | 
 | expression → var **=** expression \| simple-expression <br> var → **ID** var-a <br> simple-expression → additive-expression simple-expression-a <br> additive-expression → term additive-expression-a <br> term → factor term-a <br> factor → **(** expression **)** \| **ID** factor-a \| **NUM** | expression → <br> **ID** expression-a \| <br> **(** expression **)** term-a additive-expression-a simple-expression-a \| <br> **NUM** term-a additive-expression-a simple-expression-a <br> expression-a → var-a expression-b \| call term-a additive-expression-a simple-expression-a<br> expression-b → term-a additive-expression-a simple-expression-a \| **ε** <br>
+
+
+<br><br>
+
+1. program → declaration-list **EOF**
+2. declaration-list → declaration declaration-list-a 
+3. declaration-list-a → declaration declaration-list-a | **ε** 
+4. declaration → type-specifier **ID** declaration-a
+5. declaration-a → var-declaration | fun-declaration 
+6. var-declaration → **;** | **[ NUM ] ;** 
+7. type-specifier → **int** | **void**
+8. fun-declaration → **(** params **)** compound-stmt 
+9. params → **void** params-a | **int ID** param-a param-list
+10. params-a → **ID** param-a param-list | **ε**
+11. param-list → **,** param param-list | **ε** 
+12. param → type-specifier **ID** param-a
+13. param-a → **ε** \| **[ ]**
+14. compound-stmt → **{** declaration-list statement-list **}**
+15. statement-list → statement statement-list | **ε** 
+16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+18. selection-stmt → **if (** expression **)** statement **else** statement
+19. iteration-stmt → **while (** expression **)** statement
+20. return-stmt → **return** return-stmt-a 
+21. return-stmt-a → **;** | expression **;**
+22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+23. case-stmts → case-stmt case-stmts | **ε**
+24. case-stmt → **case NUM :** statement-list
+25. default-stmt → **default :** statement-list | **ε**
+26. expression → expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
+27. expression-a → var-a expression-b | call term-a additive-expression-a simple-expression
+28. expression-b → term-a additive-expression-a simple-expression | **ε** 
+29. var → **ID** var-a 
+30. var-a → **ε** | **[** expression **]**
+31. simple-expression → relop additive-expression | **ε**
+32. relop → **<** | **==**
+33. additive-expression → term additive-expression-a 
+34. additive-expression-a → addop term additive-expression-a | **ε** 
+35. addop → **+** | **-**
+36. term → factor term-a
+37. term-a → * factor term-a | **ε**
+38. factor → **(** expression **)** | **ID** factor-a | **NUM**
+factor-a → var-a | call
+39.  call → **(** args **)**
+40. args → arg-list | **ε**
+41. arg-list → expression arg-list-a 
+42. arg-list-a → **,** expression arg-list-a | **ε**
 
 
 
