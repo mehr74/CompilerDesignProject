@@ -200,7 +200,7 @@ end
 
 | Left-factor rule           | Alternative non-left-factor rule  |
 |:-------------| :-----|
-| var-declaration → type-specifier **ID ;** \| type-specifier **ID [ NUM ] ;** | var-declaration → type-specifier var-declaration-a <br> var-declaration-a → **ID ;** \| **ID [ NUM ] ;** |
+| var-declaration → type-specifier **ID ;** \| type-specifier **ID [ NUM ] ;** | var-declaration → type-specifier **ID** var-declaration-a <br> var-declaration-a → **;** \| **[ NUM ] ;** |
 | param → type-specifier **ID** \| type-specifier **ID []** | param → type-specifier **ID** param-a <br> param-a → **ε** \| **[]**  | 
 | return-stmt → **return ;** \| **return** expression **;** | return-stmt → **return** return-stmt-a <br> return-stmt-a → **;** \| expression **;** | 
 | var → **ID** \| **ID [** expression **]** | var → **ID** var-a <br> var-a → **ε** \| **[** expression **]** |
