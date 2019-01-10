@@ -1,4 +1,4 @@
-program → declaration-list EOF
+program → declaration-list EOF $$
 declaration-list → declaration declaration-list-a
 declaration-list-a → declaration declaration-list-a | ε
 declaration → var-declaration | fun-declaration
@@ -10,7 +10,7 @@ params → param-list | void
 param-list → param param-list-a
 param-list-a → , param param-list-a | ε
 param → type-specifier ID param-a
-param-a → ε | []
+param-a → ε | [ ]
 compound-stmt → { declaration-list statement-list }
 statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt

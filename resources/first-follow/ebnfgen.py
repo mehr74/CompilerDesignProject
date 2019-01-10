@@ -41,6 +41,7 @@ class GrammarParser:
 
                     if symbol == self.epsilon:
                         self.eps[nt] = True
+                        self.symbols.add(symbol)
                         self.first[nt].add(self.epsilon)
                     else:
                         self.symbols.add(symbol)
@@ -136,7 +137,7 @@ class GrammarParser:
         for symbol, f_set in filter(lambda x: x[0] != self.epsilon, sorted(pset.items(),
                                                                            key=lambda x: self.nt_order.index(x[0]) if
                                                                            x[0] in self.nt_order else len(self.nt_order) + 1)):
-            print("{}\t:\t{}".format(symbol, ', '.join(
+            print("{}\t,\t{}".format(symbol, ', '.join(
                 sorted(filter(lambda x: x in self.symbols, f_set)))))
 
     def print_first_set(self):
