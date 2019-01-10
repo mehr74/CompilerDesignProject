@@ -1,10 +1,44 @@
-program -> stmt_list $$
-stmt_list -> stmt stmt_list | epsilon
-stmt -> id := expr | read id | write expr
-expr -> term term_tail
-term_tail -> add_op term term_tail | epsilon
-term -> factor factor_tail
-factor_tail -> mult_op factor factor_tail | epsilon
-factor -> ( expr ) | id | number
-add_op -> + | -
-mult_op -> *|/
+program → declaration-list EOF $$
+declaration-list → declaration declaration-list-a
+declaration-list-a → declaration declaration-list-a | ε
+declaration → type-specifier ID declaration-a
+declaration-a → var-declaration | fun-declaration
+var-declaration → ; | [ NUM ] ;
+type-specifier → int | void
+fun-declaration → ( params ) compound-stmt
+params → void params-a | int ID param-a param-list
+params-a → ID param-a param-list | ε
+param-list → , param param-list | ε
+param → type-specifier ID param-a
+param-a → ε | [ ]
+compound-stmt → { declaration-list statement-list }
+statement-list → statement statement-list | ε
+statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+expression-stmt → expression ; | continue ; | break ; | ;
+selection-stmt → if ( expression ) statement else statement
+iteration-stmt → while ( expression ) statement
+return-stmt → return return-stmt-a
+return-stmt-a → ; | expression ;
+switch-stmt → switch ( expression ) { case-stmts default-stmt }
+case-stmts → case-stmt case-stmts | ε
+case-stmt → case NUM : statement-list
+default-stmt → default : statement-list | ε
+expression → expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM term-a additive-expression-a simple-expression
+expression-a → var-a expression-b | call term-a additive-expression-a simple-expression
+expression-b → term-a additive-expression-a simple-expression | ε
+var → ID var-a
+var-a → ε | [ expression ]
+simple-expression → relop additive-expression | ε
+relop → < | ==
+additive-expression → term additive-expression-a
+additive-expression-a → addop term additive-expression-a | ε
+addop → + | -
+term → factor term-a
+term-a → * factor term-a | ε
+factor → ( expression ) | ID factor-a | NUM 
+factor-a → var-a | call
+call → ( args )
+args → arg-list | ε
+arg-list → expression arg-list-a
+arg-list-a → , expression arg-list-a | ε
+
