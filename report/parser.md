@@ -260,5 +260,12 @@ end
 | params → param-list \| **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** \| **void** | params → **void** params-a \| **int ID** param-a param-list-a <br> params-a → **ID** param-a param-list-a \| **ε** <br> param → type-specifier ID param-a |
 | factor → **(** expression **)** \| var \| call \| **NUM** <br> call → **ID (** args **)** <br> var → **ID** var-a  | factor → **(** expression **)** \| **ID** factor-a \| **NUM** <br> factor-a → var-a \| call <br> call → **(** args **)** | 
 | expression → var **=** expression \| simple-expression <br> var → **ID** var-a <br> simple-expression → additive-expression simple-expression-a <br> additive-expression → term additive-expression-a <br> term → factor term-a <br> factor → **(** expression **)** \| **ID** factor-a \| **NUM** | 
+expression → <br>
+**ID** expression-a \| <br>
+**(** expression **)** term-a additive-expression-a simple-expression-a \| <br>
+**NUM** term-a additive-expression-a simple-expression-a <br>
+expression-a → var-a expression-b \| call term-a additive-expression-a simple-expression-a<br>
+expression-b → term-a additive-expression-a simple-expression-a \| **ε** <br>
+
 
 
