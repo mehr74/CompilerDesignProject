@@ -256,8 +256,8 @@ end
 
 | Left-factor rule           | Alternative non-left-factor rule  |
 |:-------------| :-----|
-| declaration → var-declaration \| fun-declaration <br> var-declaration → type-specifier **ID** var-declaration-a <br> fun-declaration → type-specifier **ID (** params **)** compound-stmt | declaration → type-specifier **ID** declaration-a <br> declaration-a → var-declaration \| fun-declaration <br> var-declaration → var-declaration-a <br> fun-declaration → **(** params **)** compound-stmt|
-| params → param-list \| **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** \| **void** | params → **void** params-a \| **int ID** param-a param-list-a <br> params-a → **ID** param-a param-list-a \| **ε**  |
+| declaration → var-declaration \| fun-declaration <br> var-declaration → type-specifier **ID** var-declaration-a <br> fun-declaration → type-specifier **ID (** params **)** compound-stmt | declaration → type-specifier **ID** declaration-a <br> declaration-a → var-declaration-a \| fun-declaration <br> fun-declaration → **(** params **)** compound-stmt|
+| params → param-list \| **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** \| **void** | params → **void** params-a \| **int ID** param-a param-list-a <br> params-a → **ID** param-a param-list-a \| **ε** <br> param → type-specifier ID param-a |
 | expression → var **=** expression \| simple-expression <br> var → **ID** var-a <br> simple-expression → additive-expression simple-expression-a <br> additive-expression → term additive-expression-a <br> term → factor term-a <br> factor → **(** expression **)** \| var \| call \| **NUM** <br> call → **ID (** args **)** | 
 | factor → **(** expression **)** \| var \| call \| **NUM** <br> call → **ID (** args **)** <br> var → **ID** var-a  | factor → **(** expression **)** \| **ID** factor-a \| **NUM** <br> factor-a → var-a \| call <br> call → **(** args **)** | 
 
