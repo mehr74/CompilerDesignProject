@@ -58,7 +58,7 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 1. program → declaration-list **EOF**
 2. declaration-list → declaration declaration-list-a 
-3. declaration-list-a → declaration declaration-list-a \| **ε** 
+3. declaration-list-a → declaration declaration-list-a | **ε** 
 4. declaration → var-declaration | fun-declaration
 5. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
 6. type-specifier → **int** | **void**
@@ -153,39 +153,39 @@ end
 1. A1 → A2 **EOF**
 2. A2 → A3 A0
 3. A0 → A3 A0 | **ε** 
-3. A3 → A4 | A5
-4. A4 → A21 **ID ;** | A21 **ID [ NUM ] ;**
-5. A21 → **int** | **void**
-6. A5 → A21 **ID (** A6 **)** A23
-7. A6 → A7 | **void**
-8. A7 → A8 A22 
-9. A22 → **,** A8 A22 | **ε** 
-10. A8 → A21 **ID** | A21 **ID []**
-11. A23 → **{** A2 A9 **}**
-12. A9 → A10 A9 | **ε** 
-13. A10 → A11 | A23 | A24 | A25 | A26 | A27
-14. A11 → A20 **;** | **continue ;** | **break ;** | **;**
-15. A24 → **if (** A20 **)** A10 **else** A10
-16. A25 → **while (** A20 **)** A10
-17. A26 → **return ;** | **return** A20 **;**
-18. A27 → **switch (** A20 **) {** A12 A29 **}**
-19. A12 → A28 A12 | **ε**
-20. A28 → **case NUM :** A9
-21. A29 → **default :** A9 | **ε**
-22. A20 → A30 **=** A20 | A14
-23. A30 → **ID** | **ID [** A20 **]**
-24. A14 → A15 A31 A15 | A15
-25. A31 → **<** | **==**
-26. A15 → A17 A16 
-27. A16 → A32 A17 A16 | **ε** 
-28. A32 → **+** | **-**
-29. A17 → A33 A18
-30. A18 → * A33 A18 | **ε**
-31. A33 → **(** A20 **)** | A30 | A34 | **NUM**
-32. A34 → **ID (** A13 **)**
-33. A13 → A19 | **ε**
-34. A19 → A20 A35 
-35. A35 → **,** A20 A35 | **ε**
+4. A3 → A4 | A5
+5. A4 → A21 **ID ;** | A21 **ID [ NUM ] ;**
+6. A21 → **int** | **void**
+7. A5 → A21 **ID (** A6 **)** A23
+8. A6 → A7 | **void**
+9. A7 → A8 A22 
+10. A22 → **,** A8 A22 | **ε** 
+11. A8 → A21 **ID** | A21 **ID []**
+12. A23 → **{** A2 A9 **}**
+13. A9 → A10 A9 | **ε** 
+14. A10 → A11 | A23 | A24 | A25 | A26 | A27
+15. A11 → A20 **;** | **continue ;** | **break ;** | **;**
+16. A24 → **if (** A20 **)** A10 **else** A10
+17. A25 → **while (** A20 **)** A10
+18. A26 → **return ;** | **return** A20 **;**
+19. A27 → **switch (** A20 **) {** A12 A29 **}**
+20. A12 → A28 A12 | **ε**
+21. A28 → **case NUM :** A9
+22. A29 → **default :** A9 | **ε**
+23. A20 → A30 **=** A20 | A14
+24. A30 → **ID** | **ID [** A20 **]**
+25. A14 → A15 A31 A15 | A15
+26. A31 → **<** | **==**
+27. A15 → A17 A16 
+28. A16 → A32 A17 A16 | **ε** 
+29. A32 → **+** | **-**
+30. A17 → A33 A18
+31. A18 → * A33 A18 | **ε**
+32. A33 → **(** A20 **)** | A30 | A34 | **NUM**
+33. A34 → **ID (** A13 **)**
+34. A13 → A19 | **ε**
+35. A19 → A20 A35 
+36. A35 → **,** A20 A35 | **ε**
 
 
 <div dir="rtl" align="right">
@@ -207,4 +207,48 @@ end
 | simple-expression → additive-expression relop additive-expression \| additive-expression | simple-expression → additive-expression simple-expression-a <br> simple-expression-a → relop additive-expression \| **ε** |
 
 
+بنابراین قواعد پس از فاکتورگیری از چپ به صورت زیر خواهد بود.
+
+
+1. program → declaration-list **EOF**
+2. declaration-list → declaration declaration-list-a 
+3. declaration-list-a → declaration declaration-list-a | **ε** 
+4. declaration → var-declaration | fun-declaration
+5. var-declaration → type-specifier **ID** var-declaration-a 
+6. var-declaration-a → **;** | **[ NUM ] ;** 
+7. type-specifier → **int** | **void**
+8. fun-declaration → type-specifier **ID (** params **)** compound-stmt
+9. params → param-list | **void**
+10. param-list → param param-list-a 
+11. param-list-a → **,** param param-list-a | **ε** 
+12. param → type-specifier **ID** param-a
+13. param-a → **ε** \| **[]**
+14. compound-stmt → **{** declaration-list statement-list **}**
+15. statement-list → statement statement-list | **ε** 
+16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+18. selection-stmt → **if (** expression **)** statement **else** statement
+19. iteration-stmt → **while (** expression **)** statement
+20. return-stmt → **return** return-stmt-a 
+21. return-stmt-a → **;** \| expression **;**
+22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+23. case-stmts → case-stmt case-stmts | **ε**
+24. case-stmt → **case NUM :** statement-list
+25. default-stmt → **default :** statement-list | **ε**
+26. expression → var **=** expression | simple-expression
+27. var → **ID** var-a 
+28. var-a → **ε** | **[** expression **]**
+29. simple-expression → additive-expression simple-expression-a
+30. simple-expression-a → relop additive-expression \| **ε**
+31. relop → **<** | **==**
+32. additive-expression → term additive-expression-a 
+33. additive-expression-a → addop term additive-expression-a | **ε** 
+34. addop → **+** | **-**
+35. term → factor term-a
+36. term-a → * factor term-a | **ε**
+37. factor → **(** expression **)** | var | call | **NUM**
+38. call → **ID (** args **)**
+39. args → arg-list | **ε**
+40. arg-list → expression arg-list-a 
+41. arg-list-a → **,** expression arg-list-a | **ε**
 
