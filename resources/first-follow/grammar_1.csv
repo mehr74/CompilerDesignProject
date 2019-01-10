@@ -4,7 +4,7 @@ declaration-list → declaration declaration-list-a,declaration-list,"int, void"
 declaration-list-a → declaration declaration-list-a | ε,declaration-list-a,"EPSILON, int, void","(, ;, EOF, ID, NUM, break, continue, if, return, switch, while, {"
 declaration → var-declaration | fun-declaration,declaration,"int, void","(, ;, EOF, ID, NUM, break, continue, if, int, return, switch, void, while, {"
 var-declaration → type-specifier ID var-declaration-a,var-declaration,"int, void","(, ;, EOF, ID, NUM, break, continue, if, int, return, switch, void, while, {"
-var-declaration-a → ; | [ NUM ] ;,var-declaration-a,";, [","(, ;, EOF, ID, NUM, break, continue, if, int, return, switch, void, while, {"
+var-declaration-a →  ; | [ NUM ] ,var-declaration-a,";, [","(, ;, EOF, ID, NUM, break, continue, if, int, return, switch, void, while, {"
 type-specifier → int | void,type-specifier,"int, void",ID
 fun-declaration → type-specifier ID ( params ) compound-stmt,fun-declaration,"int, void","(, ;, EOF, ID, NUM, break, continue, if, int, return, switch, void, while, {"
 params → param-list | void,params,"int, void",)
@@ -15,7 +15,7 @@ param-a → ε | [ ],param-a,"EPSILON, [","), ,"
 compound-stmt → { declaration-list statement-list },compound-stmt,{,"(, ;, EOF, ID, NUM, break, case, continue, default, else, if, int, return, switch, void, while, {, }"
 statement-list → statement statement-list | ε,statement-list,"(, ;, EPSILON, ID, NUM, break, continue, if, return, switch, while, {","case, default, }"
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt,statement,"(, ;, ID, NUM, break, continue, if, return, switch, while, {","(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
-expression-stmt → expression ; | continue ; | break ; | ;,expression-stmt,"(, ;, ID, NUM, break, continue","(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
+expression-stmt → expression ; continue ; | break ; | ;,expression-stmt,"(, ;, ID, NUM, break, continue","(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
 selection-stmt → if ( expression ) statement else statement,selection-stmt,if,"(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
 iteration-stmt → while ( expression ) statement,iteration-stmt,while,"(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
 return-stmt → return return-stmt-a,return-stmt,return,"(, ;, ID, NUM, break, case, continue, default, else, if, return, switch, while, {, }"
@@ -40,5 +40,3 @@ call → ID ( args ),call,ID,"), *, +, ,, -, ;, <, ==, ]"
 args → arg-list | ε,args,"(, EPSILON, ID, NUM",)
 arg-list → expression arg-list-a,arg-list,"(, ID, NUM",)
 "arg-list-a → , expression arg-list-a | ε",arg-list-a,",, EPSILON",)
-,,,"), *, +, ,, -, ;, <, =, ==, ]"
-,,,"case, default, }"
