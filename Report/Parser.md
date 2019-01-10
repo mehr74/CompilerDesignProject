@@ -62,7 +62,7 @@ A' → α1A'|α2A'|...|αmA'|ε
 3. declaration → var-declaration | fun-declaration
 4. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
 5. type-specifier → **int** | **void**
-6. fun-declaration → type-specifier **ID (** params **)** compound-stmt
+6. fun-declaration → type-specifier **ID (** params **)** compound-stmts
 7. params → param-list | **void**
 8. param-list → param param-list-a 
 9. param-list-a → **,** param param-list-a | **ε** 
@@ -124,69 +124,69 @@ end
 | statement | A10 |
 | expression-stmt | A11 | 
 | case-stmts | A12 |
-| expression | A13 |
+| args | A13 |
 | simple-expression | A14 |
 | additive-expression | A15 |
 | additive-expression-a | A16 |
 | term | A17 |
 | term-a | A18 |
-| args | A18 |
 | arg-list | A19 |
-| type-specifier | A20 |
-| param-list-a | A21 |
-| compound-stms | A22 |
-| selection-stmt | A23 |
-| iteration-stmt | A24 |
-| return-stmt | A25 |
-| switch-stmt | A26 |
-| case-stmt | A27 |
-| default-stmt | A28 |
-| var | A29 | 
-| relop | A30 | 
-| addop | A31 | 
-| term | A32 | 
+| expression | A20 |
+| type-specifier | A21 |
+| param-list-a | A22 |
+| compound-stms | A23 |
+| selection-stmt | A24 |
+| iteration-stmt | A25 |
+| return-stmt | A26 |
+| switch-stmt | A27 |
+| case-stmt | A28 |
+| default-stmt | A29 |
+| var | A30 | 
+| relop | A31 | 
+| addop | A32 | 
 | factor | A33 |
 | call | A34 |
 | arg-list-a | A35 |
- 
 
 1. A1 → A2 **EOF**
 2. A2 → A3 A2 | A3
 3. A3 → A4 | A5
-4. A4 → A20 **ID ;** | A20 **ID [ NUM ] ;**
-5. A20 → **int** | **void**
-6. A5 → A20 **ID (** A6 **)** compound-stmt
+4. A4 → A21 **ID ;** | A21 **ID [ NUM ] ;**
+5. A21 → **int** | **void**
+6. A5 → A21 **ID (** A6 **)** A23
 7. A6 → A7 | **void**
-8. A7 → A8 A21 
-9. A21 → **,** A8 A21 | **ε** 
-10. A8 → A20 **ID** | A20 **ID []**
-11. A22 → **{** A2 A9 **}**
+8. A7 → A8 A22 
+9. A22 → **,** A8 A22 | **ε** 
+10. A8 → A21 **ID** | A21 **ID []**
+11. A23 → **{** A2 A9 **}**
 12. A9 → A10 A9 | **ε** 
-13. A10 → A11 | compound-stmt | A23 | A24 | A25 | A26
-14. A11 → A13 **;** | **continue ;** | **break ;** | **;**
-15. A23 → **if (** A13 **)** A10 **else** A10
-16. A24 → **return ;** | **return** A13 **;**
-17. A25 → **return ;** | **return** A13 **;**
-18. A26 → **switch (** A13 **) {** A12 A28 **}**
-19. A12 → A27 A12 | **ε**
-20. A27 → **case NUM :** A9
-21. A28 → **default :** A9 | **ε**
-22. A13 → A29 **=** A13 | A14
-23. A29 → **ID** | **ID [** A13 **]**
-24. A14 → A15 A30 A15 | A15
-25. A30 → **<** | **==**
-26. A15 → A32 A16 
-27. A16 → A31 A32 A16 | **ε** 
-28. A31 → **+** | **-**
-29. A32 → A33 A18
+13. A10 → A11 | compound-stmt | A24 | A25 | A26 | A27
+14. A11 → A20 **;** | **continue ;** | **break ;** | **;**
+15. A24 → **if (** A20 **)** A10 **else** A10
+16. A25 → **return ;** | **return** A20 **;**
+17. A26 → **return ;** | **return** A20 **;**
+18. A27 → **switch (** A20 **) {** A12 A29 **}**
+19. A12 → A28 A12 | **ε**
+20. A28 → **case NUM :** A9
+21. A29 → **default :** A9 | **ε**
+22. A20 → A30 **=** A20 | A14
+23. A30 → **ID** | **ID [** A20 **]**
+24. A14 → A15 A31 A15 | A15
+25. A31 → **<** | **==**
+26. A15 → A17 A16 
+27. A16 → A32 A17 A16 | **ε** 
+28. A32 → **+** | **-**
+29. A17 → A33 A18
 30. A18 → * A33 A18 | **ε**
-31. A33 → **(** A13 **)** | A29 | A34 | **NUM**
-32. A34 → **ID (** A18 **)**
-33. A18 → A19 | **ε**
-34. A19 → A13 A35 
-35. A35 → **,** A13 A35 | **ε**
+31. A33 → **(** A20 **)** | A30 | A34 | **NUM**
+32. A34 → **ID (** A13 **)**
+33. A13 → A19 | **ε**
+34. A19 → A20 A35 
+35. A35 → **,** A20 A35 | **ε**
 
-
+## فاکتور گیری از چپ (Left Factoring)
+با استفاده از فاکتورگیری از چپ، می‌توان گرامر‌هایی که در آن ها برای غیرپایانه `A` دو قاعده به صورت ?? و ?? وجود دارد طوری تغییر داد که بتوان پارس بالا به پایین را برای این گرامر‌ها استفاده کرد.
+مشکل این قبیل گرامر‌ها در این است که روشن نیست که از کدام 
 
 
 
