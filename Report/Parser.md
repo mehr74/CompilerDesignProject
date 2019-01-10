@@ -37,8 +37,6 @@ A' → α1A'|α2A'|...|αmA'|ε
   
 این گونه چپ گردی‌ها را چپ‌گردی آشکار `(Explicit Left Recursion)` می‌گویند. 
 
-ممکن است، چپ‌گردی در بیش از یک قدم ظاهر شود، به آن چپ‌گردی ضمنی گویند. به عنوان مثال، گرامر زیر دارای چپ‌گردی ضمنی است. 
-
 </div>
 
 
@@ -63,17 +61,17 @@ A' → α1A'|α2A'|...|αmA'|ε
 3. declaration → var-declaration | fun-declaration
 4. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
 5. type-specifier → **int** | **void**
-6. fun-declaration → type-specifier **ID (** params **)** compound-stmts
+6. fun-declaration → type-specifier **ID (** params **)** compound-stmt
 7. params → param-list | **void**
 8. param-list → param param-list-a 
 9. param-list-a → **,** param param-list-a | **ε** 
 10. param → type-specifier **ID** | type-specifier **ID []**
-11. compound-stms → **{** declaration-list statement-list **}**
+11. compound-stmt → **{** declaration-list statement-list **}**
 12. statement-list → statement statement-list | **ε** 
 13. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
 14. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
 15. selection-stmt → **if (** expression **)** statement **else** statement
-16. iteration-stmt → **return ;** | **return** expression **;**
+16. iteration-stmt → **while (** expression **)** statement
 17. return-stmt → **return ;** | **return** expression **;**
 18. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
 19. case-stmts → case-stmt case-stmts | **ε**
@@ -98,7 +96,7 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 ## حذف چپ گردی ضمنی (Implicit Left Recursion)
 
-ورودی الگوریتم گرامر G با این شرط که قاعده` **ε**` نداشته و هیچ دوری نیز در گرامر موجود نباشد. یعنی بسط‌هایی به صورت `A → +A` در گرامر نباشد. خروجی الگوریتم، گرامری معادل گرامر G، اما فاقد چپ‌گردی است. ابتدا غیر‌پایانه‌های گرامر را به ترتیب دلخواه A1, A2, ..., An مرتب می‌کنیم. سپس اعمال زیر را به صورت مشخص شده در حلقه‌های تکرار اجرا می‌کنیم:
+ورودی الگوریتم گرامر G با این شرط که قاعده`ε` نداشته و هیچ دوری نیز در گرامر موجود نباشد. یعنی بسط‌هایی به صورت `A → +A` در گرامر نباشد. خروجی الگوریتم، گرامری معادل گرامر G، اما فاقد چپ‌گردی است. ابتدا غیر‌پایانه‌های گرامر را به ترتیب دلخواه A1, A2, ..., An مرتب می‌کنیم. سپس اعمال زیر را به صورت مشخص شده در حلقه‌های تکرار اجرا می‌کنیم:
 
 </div>
 
@@ -136,7 +134,7 @@ end
 | expression | A20 |
 | type-specifier | A21 |
 | param-list-a | A22 |
-| compound-stms | A23 |
+| compound-stmt | A23 |
 | selection-stmt | A24 |
 | iteration-stmt | A25 |
 | return-stmt | A26 |
@@ -162,10 +160,10 @@ end
 10. A8 → A21 **ID** | A21 **ID []**
 11. A23 → **{** A2 A9 **}**
 12. A9 → A10 A9 | **ε** 
-13. A10 → A11 | compound-stmt | A24 | A25 | A26 | A27
+13. A10 → A11 | A23 | A24 | A25 | A26 | A27
 14. A11 → A20 **;** | **continue ;** | **break ;** | **;**
 15. A24 → **if (** A20 **)** A10 **else** A10
-16. A25 → **return ;** | **return** A20 **;**
+16. A25 → **while (** A20 **)** A10
 17. A26 → **return ;** | **return** A20 **;**
 18. A27 → **switch (** A20 **) {** A12 A29 **}**
 19. A12 → A28 A12 | **ε**
@@ -192,7 +190,9 @@ end
 
 ## فاکتور گیری از چپ (Left Factoring)
 با استفاده از فاکتورگیری از چپ، می‌توان گرامر‌هایی که در آن ها برای غیرپایانه `A` دو قاعده به صورت ?? و ?? وجود دارد طوری تغییر داد که بتوان پارس بالا به پایین را برای این گرامر‌ها استفاده کرد.
-مشکل این قبیل گرامر‌ها در این است که روشن نیست که از کدام 
+مشکل این قبیل گرامر‌ها در این است که روشن نیست که از کدام یک از قواعد باید برای بسط غیرپایانه A استفاده کرد.
+
+
 
 </div>
 
