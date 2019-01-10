@@ -192,7 +192,17 @@ end
 با استفاده از فاکتورگیری از چپ، می‌توان گرامر‌هایی که در آن ها برای غیرپایانه `A` دو قاعده به صورت ?? و ?? وجود دارد طوری تغییر داد که بتوان پارس بالا به پایین را برای این گرامر‌ها استفاده کرد.
 مشکل این قبیل گرامر‌ها در این است که روشن نیست که از کدام یک از قواعد باید برای بسط غیرپایانه A استفاده کرد.
 
-
-
 </div>
+
+
+| Left-factor rule           | Alternative non-left-factor rule  |
+|:-------------| :-----|
+| declaration-list → declaration declaration-list \| declaration | |var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
+| var-declaration → type-specifier **ID ;** \| type-specifier **ID [ NUM ] ;** | |
+| param → type-specifier **ID** | type-specifier **ID []** | | 
+| return-stmt → **return ;** | **return** expression **;** | | 
+| var → **ID** | **ID [** expression **]** | |
+| simple-expression → additive-expression relop additive-expression | additive-expression | |
+
+
 
