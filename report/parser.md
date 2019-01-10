@@ -66,7 +66,7 @@ A' → α1A'|α2A'|...|αmA'|ε
 8. params → param-list | **void**
 9. param-list → param param-list-a 
 10. param-list-a → **,** param param-list-a | **ε** 
-11. param → type-specifier **ID** | type-specifier **ID []**
+11. param → type-specifier **ID** | type-specifier **ID [ ]**
 12. compound-stmt → **{** declaration-list statement-list **}**
 13. statement-list → statement statement-list | **ε** 
 14. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
@@ -160,7 +160,7 @@ end
 8. A6 → A7 | **void**
 9. A7 → A8 A22 
 10. A22 → **,** A8 A22 | **ε** 
-11. A8 → A21 **ID** | A21 **ID []**
+11. A8 → A21 **ID** | A21 **ID [ ]**
 12. A23 → **{** A2 A9 **}**
 13. A9 → A10 A9 | **ε** 
 14. A10 → A11 | A23 | A24 | A25 | A26 | A27
@@ -201,7 +201,7 @@ end
 | Left-factor rule           | Alternative non-left-factor rule  |
 |:-------------| :-----|
 | var-declaration → type-specifier **ID ;** \| type-specifier **ID [ NUM ] ;** | var-declaration → type-specifier **ID** var-declaration-a <br> var-declaration-a → **;** \| **[ NUM ] ;** |
-| param → type-specifier **ID** \| type-specifier **ID []** | param → type-specifier **ID** param-a <br> param-a → **ε** \| **[]**  | 
+| param → type-specifier **ID** \| type-specifier **ID [ ]** | param → type-specifier **ID** param-a <br> param-a → **ε** \| **[ ]**  | 
 | return-stmt → **return ;** \| **return** expression **;** | return-stmt → **return** return-stmt-a <br> return-stmt-a → **;** \| expression **;** | 
 | var → **ID** \| **ID [** expression **]** | var → **ID** var-a <br> var-a → **ε** \| **[** expression **]** |
 | simple-expression → additive-expression relop additive-expression \| additive-expression | simple-expression → additive-expression simple-expression-a <br> simple-expression-a → relop additive-expression \| **ε** |
@@ -222,7 +222,7 @@ end
 10. param-list → param param-list-a 
 11. param-list-a → **,** param param-list-a | **ε** 
 12. param → type-specifier **ID** param-a
-13. param-a → **ε** \| **[]**
+13. param-a → **ε** \| **[ ]**
 14. compound-stmt → **{** declaration-list statement-list **}**
 15. statement-list → statement statement-list | **ε** 
 16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
@@ -251,4 +251,11 @@ end
 39. args → arg-list | **ε**
 40. arg-list → expression arg-list-a 
 41. arg-list-a → **,** expression arg-list-a | **ε**
+
+
+
+| Left-factor rule           | Alternative non-left-factor rule  |
+|:-------------| :-----|
+| declaration → var-declaration | fun-declaration <br> var-declaration → type-specifier **ID** var-declaration-a <br> fun-declaration → type-specifier **ID (** params **)** compound-stmt | |
+| params → param-list | **void** <br> param-list → param param-list-a <br> param → type-specifier **ID** param-a <br> type-specifier → **int** |
 
