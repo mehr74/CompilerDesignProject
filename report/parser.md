@@ -262,7 +262,7 @@ end
 | expression → var **=** expression \| simple-expression <br> var → **ID** var-a <br> simple-expression → additive-expression simple-expression-a <br> additive-expression → term additive-expression-a <br> term → factor term-a <br> factor → **(** expression **)** \| **ID** factor-a \| **NUM** | expression → <br> **ID** expression-a \| <br> **(** expression **)** term-a additive-expression-a simple-expression-a \| <br> **NUM** term-a additive-expression-a simple-expression-a <br> expression-a → var-a expression-b \| call term-a additive-expression-a simple-expression-a<br> expression-b → term-a additive-expression-a simple-expression-a \| **ε** <br>
 
 
-<br><br>
+<br>
 
 1. program → declaration-list **EOF**
 2. declaration-list → declaration declaration-list-a 
@@ -289,21 +289,20 @@ end
 23. case-stmts → case-stmt case-stmts | **ε**
 24. case-stmt → **case NUM :** statement-list
 25. default-stmt → **default :** statement-list | **ε**
-26. expression → expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
-27. expression-a → var-a expression-b | call term-a additive-expression-a simple-expression
+26. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
+27. expression-a → var expression-b | call term-a additive-expression-a simple-expression
 28. expression-b → term-a additive-expression-a simple-expression | **ε** 
-29. var → **ID** var-a 
-30. var-a → **ε** | **[** expression **]**
-31. simple-expression → relop additive-expression | **ε**
-32. relop → **<** | **==**
-33. additive-expression → term additive-expression-a 
-34. additive-expression-a → addop term additive-expression-a | **ε** 
-35. addop → **+** | **-**
-36. term → factor term-a
-37. term-a → * factor term-a | **ε**
-38. factor → **(** expression **)** | **ID** factor-a | **NUM**
-factor-a → var-a | call
-39.  call → **(** args **)**
+29. var → **ε** | **[** expression **]**
+30. simple-expression → relop additive-expression | **ε**
+31. relop → **<** | **==**
+32. additive-expression → term additive-expression-a 
+33. additive-expression-a → addop term additive-expression-a | **ε** 
+34. addop → **+** | **-**
+35. term → factor term-a
+36. term-a → * factor term-a | **ε**
+37. factor → **(** expression **)** | **ID** factor-a | **NUM**
+38. factor-a → var | call
+39. call → **(** args **)**
 40. args → arg-list | **ε**
 41. arg-list → expression arg-list-a 
 42. arg-list-a → **,** expression arg-list-a | **ε**
