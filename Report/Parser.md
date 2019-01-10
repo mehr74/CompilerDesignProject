@@ -197,12 +197,12 @@ end
 
 | Left-factor rule           | Alternative non-left-factor rule  |
 |:-------------| :-----|
-| declaration-list → declaration declaration-list \| declaration | |var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
+| declaration-list → declaration declaration-list \| declaration | |
 | var-declaration → type-specifier **ID ;** \| type-specifier **ID [ NUM ] ;** | |
-| param → type-specifier **ID** | type-specifier **ID []** | | 
-| return-stmt → **return ;** | **return** expression **;** | | 
-| var → **ID** | **ID [** expression **]** | |
-| simple-expression → additive-expression relop additive-expression | additive-expression | |
+| param → type-specifier **ID** \| type-specifier **ID []** | | 
+| return-stmt → **return ;** \| **return** expression **;** | | 
+| var → **ID** \| **ID [** expression **]** | |
+| simple-expression → additive-expression relop additive-expression \| additive-expression | |
 
 
 
