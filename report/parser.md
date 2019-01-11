@@ -313,93 +313,89 @@ end
 
 
 1. program → declaration-list **EOF**
-
-program:
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/01.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/01.png)
 2. declaration-list → declaration declaration-list-a 
-
-declaration-list: 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/02.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/02.png)
 3. declaration-list-a → declaration declaration-list-a | **ε** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/03.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/03.png)
 4. declaration → type-specifier **ID** declaration-a
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/04.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/04.png)
 5. declaration-a → var-declaration | fun-declaration 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/05.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/05.png)
 6. var-declaration → **;** | **[ NUM ] ;** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/06.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/06.png)
 7. type-specifier → **int** | **void**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/07.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/07.png)
 8. fun-declaration → **(** params **)** compound-stmt 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/08.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/08.png)
 9. params → **void** params-a | **int ID** param-a param-list
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/09.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/09.png)
 10. params-a → **ID** param-a param-list | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/10.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/10.png)
 11. param-list → **,** param param-list | **ε** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/11.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/11.png)
 12. param → type-specifier **ID** param-a
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/12.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/12.png)
 13. param-a → **ε** \| **[ ]**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/13.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/13.png)
 14. compound-stmt → **{** declaration-list statement-list **}**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/14.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/14.png)
 15. statement-list → statement statement-list | **ε** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/15.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/15.png)
 16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/16.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/16.png)
 17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/17.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/17.png)
 18. selection-stmt → **if (** expression **)** statement **else** statement
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/18.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/18.png)
 19. iteration-stmt → **while (** expression **)** statement
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/19.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/19.png)
 20. return-stmt → **return** return-stmt-a 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/20.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/20.png)
 21. return-stmt-a → **;** | expression **;**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/21.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/21.png)
 22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/22.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/22.png)
 23. case-stmts → case-stmt case-stmts | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/23.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/23.png)
 24. case-stmt → **case NUM :** statement-list
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/24.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/24.png)
 25. default-stmt → **default :** statement-list | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/25.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/25.png)
 26. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/26.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/26.png)
 27. expression-a → var expression-b | call term-a additive-expression-a simple-expression
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/27.png)
-28. expression-b → term-a additive-expression-a simple-expression | **ε** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/28.png)
-29. var → **ε** | **[** expression **]**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/29.png)
-30. simple-expression → relop additive-expression | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/30.png)
-31. relop → **<** | **==**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/31.png)
-32. additive-expression → term additive-expression-a 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/32.png)
-33. additive-expression-a → addop term additive-expression-a | **ε** 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/33.png)
-34. addop → **+** | **-**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/34.png)
-35. term → factor term-a
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/35.png)
-36. term-a → * factor term-a | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/36.png)
-37. factor → **(** expression **)** | **ID** factor-a | **NUM**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/37.png)
-38. factor-a → var | call
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/38.png)
-39. call → **(** args **)**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/39.png)
-40. args → arg-list | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/40.png)
-41. arg-list → expression arg-list-a 
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/41.png)
-42. arg-list-a → **,** expression arg-list-a | **ε**
-![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/42.png)
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/27.png)
+<br>28. expression-b → term-a additive-expression-a simple-expression | **ε** 
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/28.png)
+<br>29. var → **ε** | **[** expression **]**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/29.png)
+<br>30. simple-expression → relop additive-expression | **ε**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/30.png)
+<br>31. relop → **<** | **==**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/31.png)
+<br>32. additive-expression → term additive-expression-a 
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/32.png)
+<br>33. additive-expression-a → addop term additive-expression-a | **ε** 
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/33.png)
+<br>34. addop → **+** | **-**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/34.png)
+<br>35. term → factor term-a
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/35.png)
+<br>36. term-a → * factor term-a | **ε**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/36.png)
+<br>37. factor → **(** expression **)** | **ID** factor-a | **NUM**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/37.png)
+<br>38. factor-a → var | call
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/38.png)
+<br>39. call → **(** args **)**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/39.png)
+<br>40. args → arg-list | **ε**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/40.png)
+<br>41. arg-list → expression arg-list-a 
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/41.png)
+<br>42. arg-list-a → **,** expression arg-list-a | **ε**
+<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/42.png)
 
 
 
