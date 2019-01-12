@@ -1,0 +1,17 @@
+void main(void)
+{
+
+    int i;
+
+    /*this is a comment*/
+
+    i = 0;
+
+    if (i == 53)
+        return -1;
+    else
+        return 0;
+
+    return i;
+}
+

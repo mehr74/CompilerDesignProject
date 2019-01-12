@@ -2,49 +2,53 @@ from warnings import warn
 import re
 
 
-def other():
+def _other():
     return True
 
 
-class Scanner:
-    def __init__(self, code_address):
-        local_fsm, self.state_funcs, self.keywords = self._define_lang()
-        self.fsm = self._bake_fsm(local_fsm)
-        self.last_term = (None, None)
-        self.cur_term = (None, "")
-        self.code = open(code_address)
-        self.current_char = self._next_char()
-        if self.current_char is None:
-            raise Exception("Code is empty!")
-
-    def _define_lang(self):
-        return {0: [('/', 1), ('[A-Za-z]', 4), ('[0-9]', 5), ('[+-]', 6), ('=', 8), ('[;\[\](){},:<*]', 'OP')],
-                1: [('*', 2), ],
-                2: [('*', 3), ('^[*]', 2), ],
-                3: [('*', 3), ('/', 'CMT'), ('^[*/]', 2)],
-                4: [('[A-Za-z0-9]', 4), (other, 'IK')],
-                5: [('[0-9]', 5), (other, 'NUM')],
-                6: [(self._must_add, 'OP'), (other, 7)],
-                7: [('[0-9]', 5)],
-                8: [('=', 'OP'), [other, 'OP']]}, \
-               {'OP': self._token_operator,
-                'CMT': self._token_comment,
-                'IK': self._token_id_or_keyword,
-                'NUM': self._token_num,
-                }, ['return', 'break', 'continue', 'int', 'void', 'if', 'while', 'switch', 'case']
-
-    def _next_char(self):
-        chunk_size = 1024
+def _get_code(code_address, chunk_size=1024):
+    with open(code_address) as code_file:
         while True:
-            data = self.code.read(chunk_size)
+            data = code_file.read(chunk_size)
             if not data:
                 break
             for c in data:
                 yield str(c)
-        return None
+    yield None
+
+
+class Scanner:
+    def __init__(self, code_address):
+        local_fsm, self._state_funcs, self._keywords = self._define_lang()
+        self._fsm = self._bake_fsm(local_fsm)
+        self._last_term = (None, None)
+        self._cur_token_str = ""
+        self._code = _get_code(code_address)
+        self._current_char = self._code.__next__()
+        if self._current_char is None:
+            raise Exception("Code is empty!")
+
+    def _define_lang(self):
+        return {0: [('/', 1), ('[A-Za-z]', 4), ('[0-9]', 5), ('[+-]', 6), ('=', 8), ('[;\[\](){},:<*]', 'OP'),
+                    ('\s', 9), ],
+                1: [('\*', 2), ],
+                2: [('\*', 3), ('[^*]', 2), ],
+                3: [('\*', 3), ('/', 'CMT'), ('[^*/]', 2)],
+                4: [('[A-Za-z0-9]', 4), (_other, 'IK')],
+                5: [('[0-9]', 5), (_other, 'NUM')],
+                6: [(self._must_add, 'OP'), (_other, 7)],
+                7: [('[0-9]', 5)],
+                8: [('=', 'OP'), [_other, 'OP']],
+                9: [('\s', 9), [_other, 'SPC']]}, \
+               {'OP': self._token_operator,
+                'CMT': self._token_comment,
+                'IK': self._token_id_or_keyword,
+                'NUM': self._token_num,
+                'SPC': self._token_whitespace,
+                }, ['return', 'break', 'continue', 'int', 'void', 'if', 'while', 'switch', 'case', 'else']
 
     def _must_add(self):
-        return self.last_term[0] in ['NUM', 'id'] or self.last_term[1] in [')', ']']
+        return self._last_term[0] in ['NUM', 'id'] or self._last_term[1] in [')', ']']
 
     def _bake_fsm(self, fsm):
         baked_fsm = {}
@@ -57,48 +61,48 @@ class Scanner:
         p = re.compile(pattern)
 
         def fun():
-            if p.match(self.current_char) is not None:
-                self.cur_term[1] += self.current_char
-                self.current_char = self._next_char()
+            if self._current_char is not None and p.match(self._current_char) is not None:
+                self._cur_token_str += self._current_char
+                self._current_char = self._code.__next__()
                 return True
             return False
 
         return fun
 
     def get_token(self):
-        if self.current_char is None:
+        if self._current_char is None:
             warn("End of file")
             return None
         state = 0
         while True:
-            for cond, nxt_state in self.fsm[state]:
+            for cond, nxt_state in self._fsm[state]:
                 if cond():
                     state = nxt_state
-                    if state in self.state_funcs:
-                        ans = function(self.state_funcs[state])()
-                        if ans is not None:
-                            return ans
+                    if state in self._state_funcs:
+                        return self._state_funcs[state]()
                     break
 
     def _token_operator(self):
-        self.cur_term[0] = "OP"
-        self.last_term, self.cur_term = self.cur_term, (None, "")
-        return self.last_term
-
-    def _token_comment(self):
-        self.cur_term[0] = "CMT"
-        self.last_term, self.cur_term = self.cur_term, (None, "")
-        return self.last_term
+        self._last_term = ('OP', self._cur_token_str)
+        self._cur_token_str = ""
+        return self._last_term
 
     def _token_id_or_keyword(self):
-        if self.cur_term[1] in self.keywords:
-            self.cur_term[0] = "keyword"
-        else:
-            self.cur_term[0] = "ID"
-        self.last_term, self.cur_term = self.cur_term, (None, "")
-        return self.last_term
+        self._last_term = ('keyword' if self._cur_token_str in self._keywords else 'ID', self._cur_token_str)
+        self._cur_token_str = ""
+        return self._last_term
 
     def _token_num(self):
-        self.cur_term = ("NUM", int(self.cur_term[1]))
-        self.last_term, self.cur_term = self.cur_term, (None, "")
-        return self.last_term
+        self._last_term = ("NUM", int(self._cur_token_str))
+        self._cur_token_str = ""
+        return self._last_term
+
+    def _token_comment(self):
+        return self._token_skip()
+
+    def _token_whitespace(self):
+        return self._token_skip()
+
+    def _token_skip(self):
+        self._cur_token_str = ""
+        return self.get_token()

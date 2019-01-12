@@ -1,0 +1,21 @@
+/*test3*/
+
+int count;
+
+int whileloop (int i){
+	while (0<i){
+		i=i-1;
+		output (i);
+	}
+	return 0;
+}
+
+void main (void){
+	int i[12];
+	int count;
+	count =11;
+	if (10<count) 	i[count] = whileloop(count); 
+	else ;
+		
+}
+
