@@ -5,6 +5,7 @@ class State:
     ourCnt = 0
 
     def __init__(self, name):
+        self.cur_token = None
         self.id = name + str(State.ourCnt)
         State.ourCnt = State.ourCnt + 1
 
@@ -156,20 +157,20 @@ class GrammarParser:
                 for idx, symbol in enumerate(symbols):
                     if idx == 0:
                         if idx == symbols_count - 1:
-                            self.edges.add(Edge(s_begin, s_end, symbol, 0, nt))
+                            self.edges.add(Edge(s_begin, s_end, symbol, False, nt))
                         else:
                             s_mid = State("m")
-                            self.edges.add(Edge(s_begin, s_mid, symbol, 0, nt))
+                            self.edges.add(Edge(s_begin, s_mid, symbol, False, nt))
                     else:
                         if idx == symbols_count - 1:
-                            self.edges.add(Edge(s_mid, s_end, symbol, 0, nt))
+                            self.edges.add(Edge(s_mid, s_end, symbol, False, nt))
                         else:
                             tmp = s_mid
                             s_mid = State("m")
-                            self.edges.add(Edge(tmp, s_mid, symbol, 0, nt))
+                            self.edges.add(Edge(tmp, s_mid, symbol, False, nt))
         for edge in self.edges:
             if edge.condition in self.nts:
-                edge.nt = 1
+                edge.nt = True
             self.states_edges[edge.begin.id] = [edge] if edge.begin.id not in self.states_edges \
                 else self.states_edges[edge.begin.id] + [edge]
 
@@ -184,28 +185,27 @@ class GrammarParser:
         self._parse('S0')
 
     def _parse(self, cur_state):
-        cur_token = self.cur_token
         if cur_state[0] == 'E':
             return
         else:
             for edge in self.states_edges[cur_state]:
                 # print("[ " + edge.begin.id + ", " + edge.end.id + ", '"
                 #      + edge.con + "', '" + str(edge.nt) + "', '" + edge.dir + "']")
-                if edge.condition == cur_token:
+                if edge.condition == self.cur_token:
                     # print(cur_state + " --> " + edge.end.id + " # Token matched!")
-                    print(cur_token, end=" ")
+                    print(self.cur_token, end=" ")
                     self._next_token()
                     self._parse(edge.end.id)
                     return
-                elif edge.nt == 1 and (
-                        cur_token in self.first[edge.condition] or self.epsilon in self.first[edge.condition]):
+                elif edge.nt and (
+                        self.cur_token in self.first[edge.condition] or self.epsilon in self.first[edge.condition]):
                     # print(cur_state + " --> " + self.nt_states[edge.con].id + " # non-terminal match (first)")
 
                     self._parse(self.nt_states[edge.condition].id)
                     print(edge.condition, end=" ")
                     self._parse(edge.end.id)
                     return
-                elif edge.condition == self.epsilon and cur_token in self.follow[edge.dir]:
+                elif edge.condition == self.epsilon and self.cur_token in self.follow[edge.dir]:
                     # print(cur_state + " --> " + edge.end.id + " # epsilon (follow)")
                     self._parse(edge.end.id)
                     return

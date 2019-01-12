@@ -1,2 +1,2 @@
-void main(int){int i}
+void main(void){int i;}
 

@@ -72,7 +72,7 @@ class Scanner:
     def get_token(self):
         if self._current_char is None:
             warn("End of file")
-            return None
+            return "EOF"
         state = 0
         while True:
             for cond, nxt_state in self._fsm[state]:

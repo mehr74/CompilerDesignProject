@@ -1,0 +1,5 @@
+/* test case */
+int function1(int a) {
+    int d;
+    d = 0;
+}
