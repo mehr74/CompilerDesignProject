@@ -1,4 +1,3 @@
-import sys
 from collections import defaultdict
 
 
@@ -16,7 +15,7 @@ class Edge:
     def __init__(self, begin, end, con, nt, dir):
         self.begin = begin
         self.end = end
-        self.con = con
+        self.condition = con
         self.nt = nt
         self.dir = dir
 
@@ -24,7 +23,11 @@ class Edge:
 class GrammarParser:
     epsilon = 'EPSILON'
 
-    def __init__(self, grammar):
+    def __init__(self, grammar_addr, scanner):
+        with open(grammar_addr) as grammar_file:
+            grammar = grammar_file.read()
+        self.scanner = scanner
+
         self.cur_token = ''
 
         self.states = set()
@@ -165,53 +168,44 @@ class GrammarParser:
                             s_mid = State("m")
                             self.edges.add(Edge(tmp, s_mid, symbol, 0, nt))
         for edge in self.edges:
-            if edge.con in self.nts:
+            if edge.condition in self.nts:
                 edge.nt = 1
             self.states_edges[edge.begin.id] = [edge] if edge.begin.id not in self.states_edges \
                 else self.states_edges[edge.begin.id] + [edge]
 
-    def next_token(self):
-        self.cur_token = input()
-        self.cur_token.lstrip()
-        self.cur_token.rstrip()
+    def _next_token(self):
+        self.cur_token = self.scanner.get_token()[0]
+        # self.cur_token.lstrip()
+        # self.cur_token.rstrip()
         return self.cur_token
 
-    def begin_parse(self):
-        self.next_token()
-        self.parse('S0')
+    def get_parsed(self):
+        self._next_token()
+        self._parse('S0')
 
-    def parse(self, cur_state):
+    def _parse(self, cur_state):
         cur_token = self.cur_token
-        if (cur_state[0] == 'E'):
+        if cur_state[0] == 'E':
             return
         else:
             for edge in self.states_edges[cur_state]:
                 # print("[ " + edge.begin.id + ", " + edge.end.id + ", '"
                 #      + edge.con + "', '" + str(edge.nt) + "', '" + edge.dir + "']")
-                if edge.con == cur_token:
+                if edge.condition == cur_token:
                     # print(cur_state + " --> " + edge.end.id + " # Token matched!")
-                    print(cur_token, end ="")
-                    self.next_token()
-                    self.parse(edge.end.id)
+                    print(cur_token, end=" ")
+                    self._next_token()
+                    self._parse(edge.end.id)
                     return
-                elif edge.nt == 1 and (cur_token in self.first[edge.con] or self.epsilon in self.first[edge.con]):
+                elif edge.nt == 1 and (
+                        cur_token in self.first[edge.condition] or self.epsilon in self.first[edge.condition]):
                     # print(cur_state + " --> " + self.nt_states[edge.con].id + " # non-terminal match (first)")
-                    print("{", end ="")
-                    self.parse(self.nt_states[edge.con].id)
-                    print("} (" + edge.con + ")", end ="")
-                    self.parse(edge.end.id)
+
+                    self._parse(self.nt_states[edge.condition].id)
+                    print(edge.condition, end=" ")
+                    self._parse(edge.end.id)
                     return
-                elif edge.con == self.epsilon and cur_token in self.follow[edge.dir]:
+                elif edge.condition == self.epsilon and cur_token in self.follow[edge.dir]:
                     # print(cur_state + " --> " + edge.end.id + " # epsilon (follow)")
-                    self.parse(edge.end.id)
+                    self._parse(edge.end.id)
                     return
-
-
-if __name__ == "__main__":
-    if len(sys.argv) <= 2:
-        print("{} <grammar> <code>".format(sys.argv[0]))
-    else:
-        gf = open(sys.argv[1]).read()
-        cd = open(sys.argv[2]).read()
-        ebnf = GrammarParser(gf)
-        ebnf.begin_parse()

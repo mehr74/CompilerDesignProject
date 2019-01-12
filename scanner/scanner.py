@@ -1,5 +1,5 @@
-from warnings import warn
 import re
+from warnings import warn
 
 
 def _other():
@@ -83,12 +83,12 @@ class Scanner:
                     break
 
     def _token_operator(self):
-        self._last_term = ('OP', self._cur_token_str)
+        self._last_term = (self._cur_token_str, self._cur_token_str)
         self._cur_token_str = ""
         return self._last_term
 
     def _token_id_or_keyword(self):
-        self._last_term = ('keyword' if self._cur_token_str in self._keywords else 'ID', self._cur_token_str)
+        self._last_term = (self._cur_token_str if self._cur_token_str in self._keywords else 'ID', self._cur_token_str)
         self._cur_token_str = ""
         return self._last_term
 
