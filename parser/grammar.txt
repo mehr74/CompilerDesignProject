@@ -25,7 +25,7 @@ case-stmt → case NUM : statement-list
 default-stmt → default : statement-list | ε
 expression → ID expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM term-a additive-expression-a simple-expression
 expression-a → var expression-b | call term-a additive-expression-a simple-expression
-expression-b → term-a additive-expression-a simple-expression | ε
+expression-b → term-a additive-expression-a simple-expression | = expression
 var → ε | [ expression ]
 simple-expression → relop additive-expression | ε
 relop → < | ==
