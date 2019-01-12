@@ -48,7 +48,7 @@ class Scanner:
                 }, ['return', 'break', 'continue', 'int', 'void', 'if', 'while', 'switch', 'case', 'else']
 
     def _must_add(self):
-        return self._last_term[0] in ['NUM', 'id'] or self._last_term[1] in [')', ']']
+        return self._last_term[0] in ['NUM', 'ID'] or self._last_term[1] in [')', ']']
 
     def _bake_fsm(self, fsm):
         baked_fsm = {}

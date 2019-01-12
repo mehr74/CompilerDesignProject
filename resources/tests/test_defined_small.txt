@@ -1,5 +1,32 @@
 /* test case */
+int var1;
 int function1(int a) {
+    void function2(int b, int c){
+        if (c < 2)
+            output(b);
+        else
+            output(a);
+    }
     int d;
-    d = 0;
+    int function3(void){
+        int c;
+        c = 0;
+        switch(var1){
+            case 1:
+                c = a;
+                break;
+            case 2:
+                c = a - 2
+            case 3:
+                c = c + 1
+                break;
+            default:
+                c = 9;
+        }
+        return c;
+    }
+    d = 4;
+    var1 = 2;
+    function2(function3(), d);
+    return 1;
 }

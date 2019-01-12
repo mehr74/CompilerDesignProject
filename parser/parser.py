@@ -190,7 +190,9 @@ class GrammarParser:
         else:
             for edge in self.states_edges[cur_state]:
                 # print("[ " + edge.begin.id + ", " + edge.end.id + ", '"
-                #      + edge.con + "', '" + str(edge.nt) + "', '" + edge.dir + "']")
+                #      + edge.conition + "', '" + str(edge.nt) + "', '" + edge.dir + "']")
+                # print("-----------------------")
+
                 if edge.condition == self.cur_token:
                     # print(cur_state + " --> " + edge.end.id + " # Token matched!")
                     print(self.cur_token, end=" ")
@@ -198,7 +200,8 @@ class GrammarParser:
                     self._parse(edge.end.id)
                     return
                 elif edge.nt and (
-                        self.cur_token in self.first[edge.condition] or self.epsilon in self.first[edge.condition]):
+                        self.cur_token in self.first[edge.condition] or
+                        (self.epsilon in self.first[edge.condition] and self.cur_token in self.follow[edge.condition])):
                     # print(cur_state + " --> " + self.nt_states[edge.con].id + " # non-terminal match (first)")
 
                     self._parse(self.nt_states[edge.condition].id)
