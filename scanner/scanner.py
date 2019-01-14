@@ -45,7 +45,7 @@ class Scanner:
                 'IK': self._token_id_or_keyword,
                 'NUM': self._token_num,
                 'SPC': self._token_whitespace,
-                }, ['return', 'break', 'continue', 'int', 'void', 'if', 'while', 'switch', 'case', 'else']
+                }, ['return', 'break', 'continue', 'int', 'void', 'if', 'while', 'switch', 'case', 'else', 'default']
 
     def _must_add(self):
         return self._last_term[0] in ['NUM', 'ID'] or self._last_term[1] in [')', ']']
