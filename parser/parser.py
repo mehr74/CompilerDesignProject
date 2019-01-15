@@ -176,15 +176,16 @@ class GrammarParser:
 
     def _next_token(self):
         self.cur_token = self.scanner.get_token()[0]
-        # self.cur_token.lstrip()
-        # self.cur_token.rstrip()
         return self.cur_token
 
     def get_parsed(self):
         self._next_token()
-        self._parse('S0')
+        prefix = "";
+        print("<program>")
+        self._parse('S0', prefix)
+        print("</program>")
 
-    def _parse(self, cur_state):
+    def _parse(self, cur_state, prefix):
         if cur_state[0] == 'E':
             return
         else:
@@ -195,20 +196,33 @@ class GrammarParser:
 
                 if edge.condition == self.cur_token:
                     # print(cur_state + " --> " + edge.end.id + " # Token matched!")
-                    print(self.cur_token, end=" ")
+
+                    print(prefix + self.cur_token)
+                    print(prefix + "(" + cur_state + ") ---> (" + edge.end.id + ")  [ "
+                          + edge.begin.id + ", " + edge.end.id + ", '"
+                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
+                          + " token : " + self.cur_token)
+
                     self._next_token()
-                    self._parse(edge.end.id)
+                    self._parse(edge.end.id, prefix)
                     return
                 elif edge.nt and (
                         self.cur_token in self.first[edge.condition] or
                         (self.epsilon in self.first[edge.condition] and self.cur_token in self.follow[edge.condition])):
-                    # print(cur_state + " --> " + self.nt_states[edge.con].id + " # non-terminal match (first)")
 
-                    self._parse(self.nt_states[edge.condition].id)
-                    print(edge.condition, end=" ")
-                    self._parse(edge.end.id)
+                    print(prefix + edge.condition)
+                    print(prefix + "(" + cur_state + ") ---> (" + edge.end.id + ")  [ "
+                          + edge.begin.id + ", " + edge.end.id + ", '"
+                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
+                          + " token : " + self.cur_token)
+                    self._parse(self.nt_states[edge.condition].id, prefix + " ")
+                    self._parse(edge.end.id, prefix)
                     return
                 elif edge.condition == self.epsilon and self.cur_token in self.follow[edge.dir]:
-                    # print(cur_state + " --> " + edge.end.id + " # epsilon (follow)")
-                    self._parse(edge.end.id)
+                    print(prefix + edge.condition)
+                    print(prefix + "("+ cur_state + ") ---> (" + edge.end.id + ")   [ "
+                          + edge.begin.id + ", " + edge.end.id + ", '"
+                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
+                          + " token : " + self.cur_token)
+                    self._parse(edge.end.id, prefix)
                     return

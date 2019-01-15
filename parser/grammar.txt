@@ -1,6 +1,5 @@
 program → declaration-list EOF
-declaration-list → declaration declaration-list-a
-declaration-list-a → declaration declaration-list-a | ε
+declaration-list → declaration declaration-list | ε
 declaration → type-specifier ID declaration-a
 declaration-a → var-declaration | fun-declaration
 var-declaration → ; | [ NUM ] ;
