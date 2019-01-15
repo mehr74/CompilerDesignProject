@@ -42,7 +42,7 @@ A' → α1A'|α2A'|...|αmA'|ε
 
 | Left-recursion rule           | Alternative non-left recursion rule  |
 |:-------------| :-----|
-| declaration-list → declaration-list declaration \| declaration | declaration-list → declaration declaration-list-a <br> declaration-list-a → declaration declaration-list-a \| **ε** |
+| declaration-list → declaration-list declaration \| **ε** | declaration-list → declaration declaration-list \| **ε** |
 | param-list → param-list **,** param \| param | param-list → param param-list-a <br> param-list-a → **,** param param-list-a \| **ε** |
 | statement-list → statement-list statement \| **ε** | statement-list → statement statement-list \| **ε**  |
 | case-stmts → case-stmts case-stmt \| **ε** | case-stmts → case-stmt case-stmts \| **ε**|
@@ -57,41 +57,40 @@ A' → α1A'|α2A'|...|αmA'|ε
 </div>
 
 1. program → declaration-list **EOF**
-2. declaration-list → declaration declaration-list-a 
-3. declaration-list-a → declaration declaration-list-a | **ε** 
-4. declaration → var-declaration | fun-declaration
-5. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
-6. type-specifier → **int** | **void**
-7. fun-declaration → type-specifier **ID (** params **)** compound-stmt
-8. params → param-list | **void**
-9. param-list → param param-list-a 
-10. param-list-a → **,** param param-list-a | **ε** 
-11. param → type-specifier **ID** | type-specifier **ID [ ]**
-12. compound-stmt → **{** declaration-list statement-list **}**
-13. statement-list → statement statement-list | **ε** 
-14. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
-15. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
-16. selection-stmt → **if (** expression **)** statement **else** statement
-17. iteration-stmt → **while (** expression **)** statement
-18. return-stmt → **return ;** | **return** expression **;**
-19. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
-20. case-stmts → case-stmt case-stmts | **ε**
-21. case-stmt → **case NUM :** statement-list
-22. default-stmt → **default :** statement-list | **ε**
-23. expression → var **=** expression | simple-expression
-24. var → **ID** | **ID [** expression **]**
-25. simple-expression → additive-expression relop additive-expression | additive-expression
-26. relop → **<** | **==**
-27. additive-expression → term additive-expression-a 
-28. additive-expression-a → addop term additive-expression-a | **ε** 
-29. addop → **+** | **-**
-30. term → factor term-a
-31. term-a → * factor term-a | **ε**
-32. factor → **(** expression **)** | var | call | **NUM**
-33. call → **ID (** args **)**
-34. args → arg-list | **ε**
-35. arg-list → expression arg-list-a 
-36. arg-list-a → **,** expression arg-list-a | **ε**
+2. declaration-list → declaration declaration-list | **ε** 
+3. declaration → var-declaration | fun-declaration
+4. var-declaration → type-specifier **ID ;** | type-specifier **ID [ NUM ] ;**
+5. type-specifier → **int** | **void**
+6. fun-declaration → type-specifier **ID (** params **)** compound-stmt
+7. params → param-list | **void**
+8. param-list → param param-list-a 
+9. param-list-a → **,** param param-list-a | **ε** 
+10. param → type-specifier **ID** | type-specifier **ID [ ]**
+11. compound-stmt → **{** declaration-list statement-list **}**
+12. statement-list → statement statement-list | **ε** 
+13. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+14. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+15. selection-stmt → **if (** expression **)** statement **else** statement
+16. iteration-stmt → **while (** expression **)** statement
+17. return-stmt → **return ;** | **return** expression **;**
+18. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+19. case-stmts → case-stmt case-stmts | **ε**
+20. case-stmt → **case NUM :** statement-list
+21. default-stmt → **default :** statement-list | **ε**
+22. expression → var **=** expression | simple-expression
+23. var → **ID** | **ID [** expression **]**
+24. simple-expression → additive-expression relop additive-expression | additive-expression
+25. relop → **<** | **==**
+26. additive-expression → term additive-expression-a 
+27. additive-expression-a → addop term additive-expression-a | **ε** 
+28. addop → **+** | **-**
+29. term → factor term-a
+30. term-a → * factor term-a | **ε**
+31. factor → **(** expression **)** | var | call | **NUM**
+32. call → **ID (** args **)**
+33. args → arg-list | **ε**
+34. arg-list → expression arg-list-a 
+35. arg-list-a → **,** expression arg-list-a | **ε**
 
 <div dir="rtl" align="right">
 
@@ -113,7 +112,6 @@ end
 
 | Non-terminal           | Alternative non-terminal  |
 |:-------------| :-----|
-|  declaration-list-a | A0 | 
 | program | A1 |
 | declaration-list | A2 |
 | declaration | A3 |
@@ -151,42 +149,40 @@ end
 | arg-list-a | A35 |
 
 1. A1 → A2 **EOF**
-2. A2 → A3 A0
-3. A0 → A3 A0 | **ε** 
-4. A3 → A4 | A5
-5. A4 → A21 **ID ;** | A21 **ID [ NUM ] ;**
-6. A21 → **int** | **void**
-7. A5 → A21 **ID (** A6 **)** A23
-8. A6 → A7 | **void**
-9. A7 → A8 A22 
-10. A22 → **,** A8 A22 | **ε** 
-11. A8 → A21 **ID** | A21 **ID [ ]**
-12. A23 → **{** A2 A9 **}**
-13. A9 → A10 A9 | **ε** 
-14. A10 → A11 | A23 | A24 | A25 | A26 | A27
-15. A11 → A20 **;** | **continue ;** | **break ;** | **;**
-16. A24 → **if (** A20 **)** A10 **else** A10
-17. A25 → **while (** A20 **)** A10
-18. A26 → **return ;** | **return** A20 **;**
-19. A27 → **switch (** A20 **) {** A12 A29 **}**
-20. A12 → A28 A12 | **ε**
-21. A28 → **case NUM :** A9
-22. A29 → **default :** A9 | **ε**
-23. A20 → A30 **=** A20 | A14
-24. A30 → **ID** | **ID [** A20 **]**
-25. A14 → A15 A31 A15 | A15
-26. A31 → **<** | **==**
-27. A15 → A17 A16 
-28. A16 → A32 A17 A16 | **ε** 
-29. A32 → **+** | **-**
-30. A17 → A33 A18
-31. A18 → * A33 A18 | **ε**
-32. A33 → **(** A20 **)** | A30 | A34 | **NUM**
-33. A34 → **ID (** A13 **)**
-34. A13 → A19 | **ε**
-35. A19 → A20 A35 
-36. A35 → **,** A20 A35 | **ε**
-
+2. A2 → A3 A2 | **ε** 
+3. A3 → A4 | A5
+4. A4 → A21 **ID ;** | A21 **ID [ NUM ] ;**
+5. A21 → **int** | **void**
+6. A5 → A21 **ID (** A6 **)** A23
+7. A6 → A7 | **void**
+8. A7 → A8 A22 
+9. A22 → **,** A8 A22 | **ε** 
+10. A8 → A21 **ID** | A21 **ID [ ]**
+11. A23 → **{** A2 A9 **}**
+12. A9 → A10 A9 | **ε** 
+13. A10 → A11 | A23 | A24 | A25 | A26 | A27
+14. A11 → A20 **;** | **continue ;** | **break ;** | **;**
+15. A24 → **if (** A20 **)** A10 **else** A10
+16. A25 → **while (** A20 **)** A10
+17. A26 → **return ;** | **return** A20 **;**
+18. A27 → **switch (** A20 **) {** A12 A29 **}**
+19. A12 → A28 A12 | **ε**
+20. A28 → **case NUM :** A9
+21. A29 → **default :** A9 | **ε**
+22. A20 → A30 **=** A20 | A14
+23. A30 → **ID** | **ID [** A20 **]**
+24. A14 → A15 A31 A15 | A15
+25. A31 → **<** | **==**
+26. A15 → A17 A16 
+27. A16 → A32 A17 A16 | **ε** 
+28. A32 → **+** | **-**
+29. A17 → A33 A18
+30. A18 → * A33 A18 | **ε**
+31. A33 → **(** A20 **)** | A30 | A34 | **NUM**
+32. A34 → **ID (** A13 **)**
+33. A13 → A19 | **ε**
+34. A19 → A20 A35 
+35. A35 → **,** A20 A35 | **ε**
 
 <div dir="rtl" align="right">
 
@@ -211,46 +207,45 @@ end
 
 
 1. program → declaration-list **EOF**
-2. declaration-list → declaration declaration-list-a 
-3. declaration-list-a → declaration declaration-list-a | **ε** 
-4. declaration → var-declaration | fun-declaration
-5. var-declaration → type-specifier **ID** var-declaration-a 
-6. var-declaration-a → **;** | **[ NUM ] ;** 
-7. type-specifier → **int** | **void**
-8. fun-declaration → type-specifier **ID (** params **)** compound-stmt
-9. params → param-list | **void**
-10. param-list → param param-list-a 
-11. param-list-a → **,** param param-list-a | **ε** 
-12. param → type-specifier **ID** param-a
-13. param-a → **ε** \| **[ ]**
-14. compound-stmt → **{** declaration-list statement-list **}**
-15. statement-list → statement statement-list | **ε** 
-16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
-17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
-18. selection-stmt → **if (** expression **)** statement **else** statement
-19. iteration-stmt → **while (** expression **)** statement
-20. return-stmt → **return** return-stmt-a 
-21. return-stmt-a → **;** \| expression **;**
-22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
-23. case-stmts → case-stmt case-stmts | **ε**
-24. case-stmt → **case NUM :** statement-list
-25. default-stmt → **default :** statement-list | **ε**
-26. expression → var **=** expression | simple-expression
-27. var → **ID** var-a 
-28. var-a → **ε** | **[** expression **]**
-29. simple-expression → additive-expression simple-expression-a
-30. simple-expression-a → relop additive-expression \| **ε**
-31. relop → **<** | **==**
-32. additive-expression → term additive-expression-a 
-33. additive-expression-a → addop term additive-expression-a | **ε** 
-34. addop → **+** | **-**
-35. term → factor term-a
-36. term-a → * factor term-a | **ε**
-37. factor → **(** expression **)** | var | call | **NUM**
-38. call → **ID (** args **)**
-39. args → arg-list | **ε**
-40. arg-list → expression arg-list-a 
-41. arg-list-a → **,** expression arg-list-a | **ε**
+2. declaration-list → declaration declaration-list | **ε** 
+3. declaration → var-declaration | fun-declaration
+4. var-declaration → type-specifier **ID** var-declaration-a 
+5. var-declaration-a → **;** | **[ NUM ] ;** 
+6. type-specifier → **int** | **void**
+7. fun-declaration → type-specifier **ID (** params **)** compound-stmt
+8. params → param-list | **void**
+9. param-list → param param-list-a 
+10. param-list-a → **,** param param-list-a | **ε** 
+11. param → type-specifier **ID** param-a
+12. param-a → **ε** \| **[ ]**
+13. compound-stmt → **{** declaration-list statement-list **}**
+14. statement-list → statement statement-list | **ε** 
+15. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+16. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+17. selection-stmt → **if (** expression **)** statement **else** statement
+18. iteration-stmt → **while (** expression **)** statement
+19. return-stmt → **return** return-stmt-a 
+20. return-stmt-a → **;** \| expression **;**
+21. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+22. case-stmts → case-stmt case-stmts | **ε**
+23. case-stmt → **case NUM :** statement-list
+24. default-stmt → **default :** statement-list | **ε**
+25. expression → var **=** expression | simple-expression
+26. var → **ID** var-a 
+27. var-a → **ε** | **[** expression **]**
+28. simple-expression → additive-expression simple-expression-a
+29. simple-expression-a → relop additive-expression \| **ε**
+30. relop → **<** | **==**
+31. additive-expression → term additive-expression-a 
+32. additive-expression-a → addop term additive-expression-a | **ε** 
+33. addop → **+** | **-**
+34. term → factor term-a
+35. term-a → * factor term-a | **ε**
+36. factor → **(** expression **)** | var | call | **NUM**
+37. call → **ID (** args **)**
+38. args → arg-list | **ε**
+39. arg-list → expression arg-list-a 
+40. arg-list-a → **,** expression arg-list-a | **ε**
 
 
 
@@ -265,47 +260,46 @@ end
 <br>
 
 1. program → declaration-list **EOF**
-2. declaration-list → declaration declaration-list-a 
-3. declaration-list-a → declaration declaration-list-a | **ε** 
-4. declaration → type-specifier **ID** declaration-a
-5. declaration-a → var-declaration | fun-declaration 
-6. var-declaration → **;** | **[ NUM ] ;** 
-7. type-specifier → **int** | **void**
-8. fun-declaration → **(** params **)** compound-stmt 
-9. params → **void** params-a | **int ID** param-a param-list
-10. params-a → **ID** param-a param-list | **ε**
-11. param-list → **,** param param-list | **ε** 
-12. param → type-specifier **ID** param-a
-13. param-a → **ε** \| **[ ]**
-14. compound-stmt → **{** declaration-list statement-list **}**
-15. statement-list → statement statement-list | **ε** 
-16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
-17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
-18. selection-stmt → **if (** expression **)** statement **else** statement
-19. iteration-stmt → **while (** expression **)** statement
-20. return-stmt → **return** return-stmt-a 
-21. return-stmt-a → **;** | expression **;**
-22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
-23. case-stmts → case-stmt case-stmts | **ε**
-24. case-stmt → **case NUM :** statement-list
-25. default-stmt → **default :** statement-list | **ε**
-26. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
-27. expression-a → var expression-b | call term-a additive-expression-a simple-expression
-28. expression-b → term-a additive-expression-a simple-expression | **ε** 
-29. var → **ε** | **[** expression **]**
-30. simple-expression → relop additive-expression | **ε**
-31. relop → **<** | **==**
-32. additive-expression → term additive-expression-a 
-33. additive-expression-a → addop term additive-expression-a | **ε** 
-34. addop → **+** | **-**
-35. term → factor term-a
-36. term-a → * factor term-a | **ε**
-37. factor → **(** expression **)** | **ID** factor-a | **NUM**
-38. factor-a → var | call
-39. call → **(** args **)**
-40. args → arg-list | **ε**
-41. arg-list → expression arg-list-a 
-42. arg-list-a → **,** expression arg-list-a | **ε**
+2. declaration-list → declaration declaration-list | **ε** 
+3. declaration → type-specifier **ID** declaration-a
+4. declaration-a → var-declaration | fun-declaration 
+5. var-declaration → **;** | **[ NUM ] ;** 
+6. type-specifier → **int** | **void**
+7. fun-declaration → **(** params **)** compound-stmt 
+8. params → **void** params-a | **int ID** param-a param-list
+9. params-a → **ID** param-a param-list | **ε**
+10. param-list → **,** param param-list | **ε** 
+11. param → type-specifier **ID** param-a
+12. param-a → **ε** \| **[ ]**
+13. compound-stmt → **{** declaration-list statement-list **}**
+14. statement-list → statement statement-list | **ε** 
+15. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+16. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+17. selection-stmt → **if (** expression **)** statement **else** statement
+18. iteration-stmt → **while (** expression **)** statement
+19. return-stmt → **return** return-stmt-a 
+20. return-stmt-a → **;** | expression **;**
+21. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+22. case-stmts → case-stmt case-stmts | **ε**
+23. case-stmt → **case NUM :** statement-list
+24. default-stmt → **default :** statement-list | **ε**
+25. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
+26. expression-a → var expression-b | call term-a additive-expression-a simple-expression
+27. expression-b → term-a additive-expression-a simple-expression | **ε** 
+28. var → **ε** | **[** expression **]**
+29. simple-expression → relop additive-expression | **ε**
+30. relop → **<** | **==**
+31. additive-expression → term additive-expression-a 
+32. additive-expression-a → addop term additive-expression-a | **ε** 
+33. addop → **+** | **-**
+34. term → factor term-a
+35. term-a → * factor term-a | **ε**
+36. factor → **(** expression **)** | **ID** factor-a | **NUM**
+37. factor-a → var | call
+38. call → **(** args **)**
+39. args → arg-list | **ε**
+40. arg-list → expression arg-list-a 
+41. arg-list-a → **,** expression arg-list-a | **ε**
 
 
 
@@ -314,87 +308,85 @@ end
 
 1. program → declaration-list **EOF**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/01.png)
-2. declaration-list → declaration declaration-list-a 
-<br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/02.png)
-3. declaration-list-a → declaration declaration-list-a | **ε** 
+2. 2. declaration-list → declaration declaration-list | **ε** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/03.png)
-4. declaration → type-specifier **ID** declaration-a
+3. declaration → type-specifier **ID** declaration-a
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/04.png)
-5. declaration-a → var-declaration | fun-declaration 
+4. declaration-a → var-declaration | fun-declaration 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/05.png)
-6. var-declaration → **;** | **[ NUM ] ;** 
+5. var-declaration → **;** | **[ NUM ] ;** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/06.png)
-7. type-specifier → **int** | **void**
+6. type-specifier → **int** | **void**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/07.png)
-8. fun-declaration → **(** params **)** compound-stmt 
+7. fun-declaration → **(** params **)** compound-stmt 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/08.png)
-9. params → **void** params-a | **int ID** param-a param-list
+8. params → **void** params-a | **int ID** param-a param-list
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/09.png)
-10. params-a → **ID** param-a param-list | **ε**
+9. params-a → **ID** param-a param-list | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/10.png)
-11. param-list → **,** param param-list | **ε** 
+10. param-list → **,** param param-list | **ε** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/11.png)
-12. param → type-specifier **ID** param-a
+11. param → type-specifier **ID** param-a
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/12.png)
-13. param-a → **ε** \| **[ ]**
+12. param-a → **ε** \| **[ ]**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/13.png)
-14. compound-stmt → **{** declaration-list statement-list **}**
+13. compound-stmt → **{** declaration-list statement-list **}**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/14.png)
-15. statement-list → statement statement-list | **ε** 
+14. statement-list → statement statement-list | **ε** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/15.png)
-16. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+15. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/16.png)
-17. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
+16. expression-stmt → expression **;** | **continue ;** | **break ;** | **;**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/17.png)
-18. selection-stmt → **if (** expression **)** statement **else** statement
+17. selection-stmt → **if (** expression **)** statement **else** statement
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/18.png)
-19. iteration-stmt → **while (** expression **)** statement
+18. iteration-stmt → **while (** expression **)** statement
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/19.png)
-20. return-stmt → **return** return-stmt-a 
+19. return-stmt → **return** return-stmt-a 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/20.png)
-21. return-stmt-a → **;** | expression **;**
+20. return-stmt-a → **;** | expression **;**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/21.png)
-22. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
+21. switch-stmt → **switch (** expression **) {** case-stmts default-stmt **}**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/22.png)
-23. case-stmts → case-stmt case-stmts | **ε**
+22. case-stmts → case-stmt case-stmts | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/23.png)
-24. case-stmt → **case NUM :** statement-list
+23. case-stmt → **case NUM :** statement-list
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/24.png)
-25. default-stmt → **default :** statement-list | **ε**
+24. default-stmt → **default :** statement-list | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/25.png)
-26. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
+25. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/26.png)
-27. expression-a → var expression-b | call term-a additive-expression-a simple-expression
+26. expression-a → var expression-b | call term-a additive-expression-a simple-expression
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/27.png)
-<br>28. expression-b → term-a additive-expression-a simple-expression | **ε** 
+27. expression-b → term-a additive-expression-a simple-expression | **ε** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/28.png)
-<br>29. var → **ε** | **[** expression **]**
+28. var → **ε** | **[** expression **]**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/29.png)
-<br>30. simple-expression → relop additive-expression | **ε**
+29. simple-expression → relop additive-expression | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/30.png)
-<br>31. relop → **<** | **==**
+30. relop → **<** | **==**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/31.png)
-<br>32. additive-expression → term additive-expression-a 
+31. additive-expression → term additive-expression-a 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/32.png)
-<br>33. additive-expression-a → addop term additive-expression-a | **ε** 
+32. additive-expression-a → addop term additive-expression-a | **ε** 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/33.png)
-<br>34. addop → **+** | **-**
+33. addop → **+** | **-**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/34.png)
-<br>35. term → factor term-a
+34. term → factor term-a
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/35.png)
-<br>36. term-a → * factor term-a | **ε**
+35. term-a → * factor term-a | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/36.png)
-<br>37. factor → **(** expression **)** | **ID** factor-a | **NUM**
+36. factor → **(** expression **)** | **ID** factor-a | **NUM**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/37.png)
-<br>38. factor-a → var | call
+37. factor-a → var | call
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/38.png)
-<br>39. call → **(** args **)**
+38. call → **(** args **)**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/39.png)
-<br>40. args → arg-list | **ε**
+39. args → arg-list | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/40.png)
-<br>41. arg-list → expression arg-list-a 
+40. arg-list → expression arg-list-a 
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/41.png)
-<br>42. arg-list-a → **,** expression arg-list-a | **ε**
+41. arg-list-a → **,** expression arg-list-a | **ε**
 <br>![alt text](https://github.com/mehr74/CompilerDesignProject/blob/master/report/images/42.png)
 
 
