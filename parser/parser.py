@@ -218,10 +218,6 @@ class GrammarParser:
             return
         else:
             for edge in self.states_edges[cur_state]:
-                # print("[ " + edge.begin.id + ", " + edge.end.id + ", '"
-                #      + edge.conition + "', '" + str(edge.nt) + "', '" + edge.dir + "']")
-                # print("-----------------------")
-
                 if edge.condition == self.cur_token:
                     self.xml.add_not(self.cur_token)
                     if self.cur_token != "EOF":
