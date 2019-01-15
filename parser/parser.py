@@ -1,5 +1,32 @@
 from collections import defaultdict
 
+class XMLGenerator:
+    def __init__(self, xml_addr):
+        self.xml_file = open(xml_addr, "w")
+
+    @staticmethod
+    def _escape(str):
+        str = str.replace(">", "&gt;")
+        str = str.replace("<", "&lt;")
+        str = str.replace("&", "&amp;")
+        str = str.replace("'", "&apos;")
+        str = str.replace("\"", "&quot;")
+        return str
+
+    def add_open_tag(self, tag):
+        tag = self._escape(tag)
+        self.xml_file.write("<" + tag + ">")
+        self.xml_file.write(tag)
+
+    def add_close_tag(self, tag):
+        tag = self._escape(tag)
+        self.xml_file.write("</" + tag + ">")
+
+    def add_not(self, node):
+        node = self._escape(node)
+        self.xml_file.write("<token>")
+        self.xml_file.write(node)
+        self.xml_file.write("</token> + \n")
 
 class State:
     ourCnt = 0
@@ -22,11 +49,12 @@ class Edge:
 
 
 class GrammarParser:
-    epsilon = 'EPSILON'
+    epsilon = "EPSILON"
 
-    def __init__(self, grammar_addr, scanner):
+    def __init__(self, grammar_addr, xml_addr, scanner):
         with open(grammar_addr) as grammar_file:
             grammar = grammar_file.read()
+        self.xml = XMLGenerator(xml_addr)
         self.scanner = scanner
 
         self.cur_token = ''
@@ -180,10 +208,10 @@ class GrammarParser:
 
     def get_parsed(self):
         self._next_token()
-        prefix = "";
-        print("<program>")
+        prefix = "  ";
+        self.xml.add_open_tag("program")
         self._parse('S0', prefix)
-        print("</program>")
+        self.xml.add_close_tag("program")
 
     def _parse(self, cur_state, prefix):
         if cur_state[0] == 'E':
@@ -195,34 +223,20 @@ class GrammarParser:
                 # print("-----------------------")
 
                 if edge.condition == self.cur_token:
-                    # print(cur_state + " --> " + edge.end.id + " # Token matched!")
-
-                    print(prefix + self.cur_token)
-                    print(prefix + "(" + cur_state + ") ---> (" + edge.end.id + ")  [ "
-                          + edge.begin.id + ", " + edge.end.id + ", '"
-                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
-                          + " token : " + self.cur_token)
-
-                    self._next_token()
+                    self.xml.add_not(self.cur_token)
+                    if self.cur_token != "EOF":
+                        self._next_token()
                     self._parse(edge.end.id, prefix)
                     return
                 elif edge.nt and (
                         self.cur_token in self.first[edge.condition] or
                         (self.epsilon in self.first[edge.condition] and self.cur_token in self.follow[edge.condition])):
-
-                    print(prefix + edge.condition)
-                    print(prefix + "(" + cur_state + ") ---> (" + edge.end.id + ")  [ "
-                          + edge.begin.id + ", " + edge.end.id + ", '"
-                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
-                          + " token : " + self.cur_token)
+                    self.xml.add_open_tag(edge.condition)
                     self._parse(self.nt_states[edge.condition].id, prefix + " ")
+                    self.xml.add_close_tag(edge.condition)
                     self._parse(edge.end.id, prefix)
                     return
                 elif edge.condition == self.epsilon and self.cur_token in self.follow[edge.dir]:
-                    print(prefix + edge.condition)
-                    print(prefix + "("+ cur_state + ") ---> (" + edge.end.id + ")   [ "
-                          + edge.begin.id + ", " + edge.end.id + ", '"
-                          + edge.condition + "', '" + str(edge.nt) + "', '" + edge.dir + "']"
-                          + " token : " + self.cur_token)
+                    self.xml.add_not(self.epsilon)
                     self._parse(edge.end.id, prefix)
                     return

@@ -285,7 +285,7 @@ end
 24. default-stmt → **default :** statement-list | **ε**
 25. expression → **ID** expression-a | **(** expression **)** term-a additive-expression-a simple-expression | **NUM** term-a additive-expression-a simple-expression
 26. expression-a → var expression-b | call term-a additive-expression-a simple-expression
-27. expression-b → term-a additive-expression-a simple-expression | **ε** 
+27. expression-b → term-a additive-expression-a simple-expression | **=** expression
 28. var → **ε** | **[** expression **]**
 29. simple-expression → relop additive-expression | **ε**
 30. relop → **<** | **==**
