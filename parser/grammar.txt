@@ -13,14 +13,14 @@ param-a → ε | [ ]
 compound-stmt → { declaration-list statement-list }
 statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
-expression-stmt → expression ; | continue ; | break ; | ;
+expression-stmt → expression ; | continue ; | break #break_save ; | ;
 selection-stmt → if ( expression #save ) statement #jpf_save else statement #jp
 iteration-stmt → while ( #label expression ) #save statement #while
 return-stmt → return return-stmt-a
 return-stmt-a → ; | expression ;
-switch-stmt → switch ( expression ) { case-stmts default-stmt }
-case-stmts → case-stmt case-stmts | ε
-case-stmt → case NUM : statement-list
+switch-stmt → switch ( #push_switch expression ) { case-stmts default-stmt } #jp_break_pop
+case-stmts → case-stmt #jpf case-stmts | ε
+case-stmt → case NUM #cmp_save : statement-list
 default-stmt → default : statement-list | ε
 expression → ID #pid expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM #push_imm term-a additive-expression-a simple-expression
 expression-a → var expression-b | call term-a additive-expression-a simple-expression
@@ -30,12 +30,12 @@ simple-expression → relop additive-expression | ε
 relop → < | ==
 additive-expression → term additive-expression-a
 additive-expression-a → addop term #add additive-expression-a | ε
-addop → + | -
+addop → + #push_plus | - #push_minus
 term → factor term-a
 term-a → * factor #mult term-a | ε
 factor → ( expression ) | ID #pid factor-a | NUM #push_imm
 factor-a → var | call
-call → ( args )
+call → ( #push_arg args ) #call
 args → arg-list | ε
 arg-list → expression arg-list-a
 arg-list-a → , expression arg-list-a | ε

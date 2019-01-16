@@ -239,26 +239,28 @@ class GrammarParser:
         if cur_state[0] == 'E':
             return
         else:
-            for edge in self.states_edges[cur_state]:
-                if edge.condition == self.cur_token[0]:
-                    self.xml.add_node(self.cur_token[0], self.cur_token[1])
-                    self.code_generator.generate_code(edge.func, self.cur_token[1])
-                    if self.cur_token[0] != "EOF":
-                        self._next_token()
-
-                    self._parse(edge.end.id, prefix)
-                    return
-                elif edge.nt and (
-                        self.cur_token[0] in self.first[edge.condition] or
-                        (self.epsilon in self.first[edge.condition] and self.cur_token[0] in self.follow[edge.condition])):
-                    self.xml.add_open_tag(edge.condition)
-                    self._parse(self.nt_states[edge.condition].id, prefix + " ")
-                    self.xml.add_close_tag(edge.condition)
-                    self.code_generator.generate_code(edge.func, self.cur_token[1])
-                    self._parse(edge.end.id, prefix)
-                    return
-                elif edge.condition == self.epsilon and self.cur_token[0] in self.follow[edge.dir]:
-                    self.xml.add_node(self.epsilon)
-                    self.code_generator.generate_code(edge.func, self.cur_token[1])
-                    self._parse(edge.end.id, prefix)
-                    return
+            if cur_state in self.states_edges:
+                for edge in self.states_edges[cur_state]:
+                    if edge.condition == self.cur_token[0]:
+                        self.xml.add_node(self.cur_token[0], self.cur_token[1])
+                        self.code_generator.generate_code(edge.func, self.cur_token[1])
+                        if self.cur_token[0] != "EOF":
+                            self._next_token()
+                        self._parse(edge.end.id, prefix)
+                        return
+                    elif edge.nt and (
+                            self.cur_token[0] in self.first[edge.condition] or
+                            (self.epsilon in self.first[edge.condition] and self.cur_token[0] in self.follow[edge.condition])):
+                        self.xml.add_open_tag(edge.condition)
+                        self._parse(self.nt_states[edge.condition].id, prefix + " ")
+                        self.xml.add_close_tag(edge.condition)
+                        self.code_generator.generate_code(edge.func, self.cur_token[1])
+                        self._parse(edge.end.id, prefix)
+                        return
+                    elif edge.condition == self.epsilon and self.cur_token[0] in self.follow[edge.dir]:
+                        self.xml.add_node(self.epsilon)
+                        self.code_generator.generate_code(edge.func, self.cur_token[1])
+                        self._parse(edge.end.id, prefix)
+                        return
+            else:
+                print("Warning : state is not in edges!")

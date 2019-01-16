@@ -64,15 +64,29 @@ class SymbolTable:
         self._table[key] = symbol
         return symbol
 
-    def find_symbol(self, name):
+    def _find_symbol(self, name):
         key = str(self._cur_scope) + name
         if key in self._table:
             return str(self._table[key].address)
+        return ""
+
+    def find_symbol(self, name):
+        if name == "output":
+            return name
+        symbol = self._find_symbol(name)
+        if symbol == "":
+            print("ERROR: Symbol " + name + " not defined!")
+            return ""
         else:
-            return str(self._new_local_symbol(name).address)
+            return symbol
 
     def add_symbol(self, name):
-        self.find_symbol(name)
+        symbol = self._find_symbol(name)
+        if symbol != "":
+            print("ERROR: Symbol " + name + " has been defined!")
+            return
+        else:
+            return str(self._new_local_symbol(name).address)
 
     def print_symbols(self):
         print("Symbol".rjust(32) + "\t "+ "Scope".rjust(10) + " \t " + "Address".rjust(10))
@@ -88,6 +102,15 @@ class CodeGenerator:
         self.program_block = ProgramBlock(address)
 
     def generate_code(self, sign, token):
+        if sign == "":
+            return
+        print("Semantic Stack : ")
+        for entry in self.semantic_stack:
+            print(entry)
+        print("Token : " + str(token))
+        print("Sign : " + sign)
+        print("\n")
+
         if sign == "#id":
             self.symbol_table.add_symbol(token)
 
@@ -96,7 +119,6 @@ class CodeGenerator:
             self.semantic_stack.append(address)
 
         elif sign == "#assign":
-            print("\n")
             self.program_block.add_line("ASSIGN", self.semantic_stack.pop(), self.semantic_stack.pop())
 
         elif sign == "#mult":
@@ -106,7 +128,10 @@ class CodeGenerator:
 
         elif sign == "#add":
             temp = self.symbol_table.new_temp_symbol()
-            self.program_block.add_line("ADD", self.semantic_stack.pop(), self.semantic_stack.pop(), temp)
+            operand_2 = self.semantic_stack.pop()
+            operation = self.semantic_stack.pop()
+            operand_1 = self.semantic_stack.pop()
+            self.program_block.add_line(operation, operand_1, operand_2, temp)
             self.semantic_stack.append(temp)
 
         elif sign == "#push_imm":
@@ -137,6 +162,62 @@ class CodeGenerator:
         elif sign == "#label":
             self.semantic_stack.append(self.program_block.cur_program_counter)
 
+        elif sign == "#cmp_save":
+            num = token
+            switch = self.semantic_stack.pop()
+            temp_1 = self.symbol_table.new_temp_symbol()
+            self.program_block.add_line("SUB", switch, "#" + str(num), temp_1)
+            temp_2 = self.symbol_table.new_temp_symbol()
+            self.program_block.add_line("NOT", temp_1, temp_2)
+            self.semantic_stack.append(switch)
+            self.semantic_stack.append(temp_2)
+            address = self.program_block.increment_program_counter()
+            self.semantic_stack.append(address)
+
+        elif sign == "#jpf":
+            pc = self.semantic_stack.pop()
+            condition = self.semantic_stack.pop()
+            self.program_block.add_line_with_pc(pc, "JPF", condition, str(self.program_block.cur_program_counter))
+
+        elif sign == "#push_plus":
+            self.semantic_stack.append("ADD")
+
+        elif sign == "#push_minus":
+            self.semantic_stack.append("SUB")
+
+        elif sign == "#push_arg":
+            self.semantic_stack.append("ARG")
+
+        elif sign == "#call":
+            args = [self.semantic_stack.pop()]
+            while "ARG" not in args:
+                args.append(self.semantic_stack.pop())
+            func = self.semantic_stack.pop()
+            if func == "output" and (len(args) == 2):
+                self.program_block.add_line("PRINT", args[0])
+
+        elif sign == "#jp_break_pop":
+            self.semantic_stack.pop()
+            entry = self.semantic_stack.pop()
+            while entry != "switch":
+                self.program_block.add_line_with_pc(entry, "JP", self.program_block.cur_program_counter)
+                entry = self.semantic_stack.pop()
+
+        elif sign == "#push_switch":
+            self.semantic_stack.append("switch")
+
+        elif sign == "#break_save":
+            case_address = self.semantic_stack.pop()
+            case_condition = self.semantic_stack.pop()
+            switch_condition = self.semantic_stack.pop()
+            break_address = self.program_block.increment_program_counter()
+            self.semantic_stack.append(break_address)
+            self.semantic_stack.append(switch_condition)
+            self.semantic_stack.append(case_condition)
+            self.semantic_stack.append(case_address)
+
     def write_output(self):
+        for entry in self.semantic_stack:
+            print(entry + "\n")
         self.program_block.write_to_file()
         self.symbol_table.print_symbols()
