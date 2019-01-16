@@ -1,6 +1,6 @@
 program → declaration-list EOF
 declaration-list → declaration declaration-list | ε
-declaration → type-specifier ID declaration-a
+declaration → type-specifier ID #id declaration-a
 declaration-a → var-declaration | fun-declaration
 var-declaration → ; | [ NUM ] ;
 type-specifier → int | void
@@ -22,18 +22,18 @@ switch-stmt → switch ( expression ) { case-stmts default-stmt }
 case-stmts → case-stmt case-stmts | ε
 case-stmt → case NUM : statement-list
 default-stmt → default : statement-list | ε
-expression → ID expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM term-a additive-expression-a simple-expression
+expression → ID #pid expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM #push_imm term-a additive-expression-a simple-expression
 expression-a → var expression-b | call term-a additive-expression-a simple-expression
-expression-b → term-a additive-expression-a simple-expression | = expression
+expression-b → term-a additive-expression-a simple-expression | = expression #assign
 var → ε | [ expression ]
 simple-expression → relop additive-expression | ε
 relop → < | ==
 additive-expression → term additive-expression-a
-additive-expression-a → addop term additive-expression-a | ε
+additive-expression-a → addop term #add additive-expression-a | ε
 addop → + | -
 term → factor term-a
 term-a → * factor term-a | ε
-factor → ( expression ) | ID factor-a | NUM
+factor → ( expression ) | ID #pid factor-a | NUM #push_imm
 factor-a → var | call
 call → ( args )
 args → arg-list | ε

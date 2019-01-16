@@ -1,8 +1,12 @@
 from collections import defaultdict
 
+
 class XMLGenerator:
     def __init__(self, xml_addr):
         self.xml_file = open(xml_addr, "w")
+
+    def __del__(self):
+        self.xml_file.close()
 
     @staticmethod
     def _escape(str):
@@ -22,11 +26,16 @@ class XMLGenerator:
         tag = self._escape(tag)
         self.xml_file.write("</" + tag + ">")
 
-    def add_not(self, node):
+    def add_node(self, node, value=""):
         node = self._escape(node)
         self.xml_file.write("<token>")
         self.xml_file.write(node)
+        if node == "ID" or node == "NUM":
+            self.xml_file.write("<value>")
+            self.xml_file.write(str(value))
+            self.xml_file.write("</value>")
         self.xml_file.write("</token> + \n")
+
 
 class State:
     ourCnt = 0
@@ -40,27 +49,29 @@ class State:
 class Edge:
     ourCnt = 0
 
-    def __init__(self, begin, end, con, nt, dir):
+    def __init__(self, begin, end, con, nt, dir, func):
         self.begin = begin
         self.end = end
         self.condition = con
         self.nt = nt
         self.dir = dir
+        self.func = func
 
 
 class GrammarParser:
     epsilon = "EPSILON"
 
-    def __init__(self, grammar_addr, xml_addr, scanner):
+    def __init__(self, grammar_addr, xml_addr, scanner, code_generator):
         with open(grammar_addr) as grammar_file:
             grammar = grammar_file.read()
         self.xml = XMLGenerator(xml_addr)
         self.scanner = scanner
+        self.code_generator = code_generator
 
         self.cur_token = ''
 
         self.states = set()
-        self.edges = set()
+        self.edges = []
         self.nt_states = {}
         self.states_edges = {}
         self.nts = []
@@ -90,6 +101,7 @@ class GrammarParser:
 
             self.nt.add(nt)
             self.symbols.add(nt)
+            rhs = " ".join(filter(lambda x: x[0] != '#', rhs.split()))
             for s_prod in rhs.split("|"):
                 cur_prod = []
                 for symbol in s_prod.split():
@@ -147,7 +159,6 @@ class GrammarParser:
 
             for nt in self.nt:
                 for prod in self.productions[nt]:
-
                     for symbol1, symbol2 in zip(prod, prod[1:]):
                         # The first symbol must be non-terminal
                         if symbol1 in self.nt:
@@ -182,20 +193,30 @@ class GrammarParser:
             for s_prod in rhs.split("|"):
                 symbols = s_prod.split()
                 symbols_count = len(symbols)
+                first = -1
+                last = -1
                 for idx, symbol in enumerate(symbols):
-                    if idx == 0:
+                    if symbol[0] != '#' and first == -1:
+                        first = idx
+                    if symbol[0] != '#':
+                        last = idx
+                for idx, symbol in enumerate(symbols):
+                    if symbol[0] == '#':
+                        self.edges[-1].func = symbol
+                        continue
+                    if idx == first:
                         if idx == symbols_count - 1:
-                            self.edges.add(Edge(s_begin, s_end, symbol, False, nt))
+                            self.edges.append(Edge(s_begin, s_end, symbol, False, nt, ""))
                         else:
                             s_mid = State("m")
-                            self.edges.add(Edge(s_begin, s_mid, symbol, False, nt))
+                            self.edges.append(Edge(s_begin, s_mid, symbol, False, nt, ""))
                     else:
-                        if idx == symbols_count - 1:
-                            self.edges.add(Edge(s_mid, s_end, symbol, False, nt))
+                        if idx == last:
+                            self.edges.append(Edge(s_mid, s_end, symbol, False, nt, ""))
                         else:
                             tmp = s_mid
                             s_mid = State("m")
-                            self.edges.add(Edge(tmp, s_mid, symbol, False, nt))
+                            self.edges.append(Edge(tmp, s_mid, symbol, False, nt, ""))
         for edge in self.edges:
             if edge.condition in self.nts:
                 edge.nt = True
@@ -203,36 +224,41 @@ class GrammarParser:
                 else self.states_edges[edge.begin.id] + [edge]
 
     def _next_token(self):
-        self.cur_token = self.scanner.get_token()[0]
+        self.cur_token = self.scanner.get_token()
         return self.cur_token
 
     def get_parsed(self):
         self._next_token()
-        prefix = "  ";
+        prefix = "  "
         self.xml.add_open_tag("program")
         self._parse('S0', prefix)
         self.xml.add_close_tag("program")
+        self.code_generator.write_output()
 
     def _parse(self, cur_state, prefix):
         if cur_state[0] == 'E':
             return
         else:
             for edge in self.states_edges[cur_state]:
-                if edge.condition == self.cur_token:
-                    self.xml.add_not(self.cur_token)
-                    if self.cur_token != "EOF":
+                if edge.condition == self.cur_token[0]:
+                    self.xml.add_node(self.cur_token[0], self.cur_token[1])
+                    self.code_generator.generate_code(edge.func, self.cur_token[1])
+                    if self.cur_token[0] != "EOF":
                         self._next_token()
+
                     self._parse(edge.end.id, prefix)
                     return
                 elif edge.nt and (
-                        self.cur_token in self.first[edge.condition] or
-                        (self.epsilon in self.first[edge.condition] and self.cur_token in self.follow[edge.condition])):
+                        self.cur_token[0] in self.first[edge.condition] or
+                        (self.epsilon in self.first[edge.condition] and self.cur_token[0] in self.follow[edge.condition])):
                     self.xml.add_open_tag(edge.condition)
                     self._parse(self.nt_states[edge.condition].id, prefix + " ")
                     self.xml.add_close_tag(edge.condition)
+                    self.code_generator.generate_code(edge.func, self.cur_token[1])
                     self._parse(edge.end.id, prefix)
                     return
-                elif edge.condition == self.epsilon and self.cur_token in self.follow[edge.dir]:
-                    self.xml.add_not(self.epsilon)
+                elif edge.condition == self.epsilon and self.cur_token[0] in self.follow[edge.dir]:
+                    self.xml.add_node(self.epsilon)
+                    self.code_generator.generate_code(edge.func, self.cur_token[1])
                     self._parse(edge.end.id, prefix)
                     return
