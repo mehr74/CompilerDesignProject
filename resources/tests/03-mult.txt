@@ -1,0 +1,12 @@
+int main(void)
+{
+	int a;
+	int b;
+	int c;
+	a = 1;
+	b = 2;
+	c = a * b;
+	output(a);
+	output(b);
+	output(c);
+}

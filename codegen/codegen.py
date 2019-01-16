@@ -83,21 +83,25 @@ class CodeGenerator:
     def generate_code(self, sign, token):
         if sign == "#id":
             self.symbol_table.add_symbol(token)
+
         elif sign == "#pid":
             address = self.symbol_table.find_symbol(token)
             self.semantic_stack.append(address)
+
         elif sign == "#assign":
-            for ss in self.semantic_stack:
-                print(ss)
             print("\n")
             self.program_block.add_line("ASSIGN", self.semantic_stack.pop(), self.semantic_stack.pop())
+
         elif sign == "#mult":
-            pass
+            temp = self.symbol_table.new_temp_symbol()
+            self.program_block.add_line("MULT", self.semantic_stack.pop(), self.semantic_stack.pop(), temp)
+            self.semantic_stack.append(temp)
+
         elif sign == "#add":
             temp = self.symbol_table.new_temp_symbol()
             self.program_block.add_line("ADD", self.semantic_stack.pop(), self.semantic_stack.pop(), temp)
             self.semantic_stack.append(temp)
-            pass
+
         elif sign == "#push_imm":
             self.semantic_stack.append("#" + str(token))
 
