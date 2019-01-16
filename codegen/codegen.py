@@ -48,7 +48,7 @@ class SymbolTable:
     def new_temp_symbol(self):
         address = self._next_temp_address
         self._next_temp_address = self._next_temp_address + 4
-        return address
+        return str(address)
 
     def _new_local_symbol(self, name):
         symbol = Symbol(name, self._cur_scope, self._next_local_address)
@@ -66,6 +66,7 @@ class SymbolTable:
 
     def add_symbol(self, name):
         self.find_symbol(name)
+
     def print_symbols(self):
         print("Symbol".rjust(32) + "\t "+ "Scope".rjust(10) + " \t " + "Address".rjust(10))
         for key, symbol in self._table.items():
@@ -85,8 +86,6 @@ class CodeGenerator:
         elif sign == "#pid":
             address = self.symbol_table.find_symbol(token)
             self.semantic_stack.append(address)
-        elif sign == "#add":
-            address = self.symbol_table.new_temp_symbol()
         elif sign == "#assign":
             for ss in self.semantic_stack:
                 print(ss)
