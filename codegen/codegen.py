@@ -6,11 +6,11 @@ class ProgramBlock:
         self.address = address
 
     def add_line(self, op, address_1, address_2="", address_3=""):
-        self._program_block.append("(" + op + ", " + address_1 + ", " + address_2 + ", " + address_3 + ")")
+        self._program_block.append("(" + op + ", " + str(address_1) + ", " + str(address_2) + ", " + str(address_3) + ")")
         self.cur_program_counter = self.cur_program_counter + 1
 
     def add_line_with_pc(self, pc, op, address_1, address_2="", address_3=""):
-        self._program_block[pc] = "(" + op + ", " + address_1 + ", " + address_2 + ", " + address_3 + ")"
+        self._program_block[pc] = "(" + op + ", " + str(address_1) + ", " + str(address_2) + ", " + str(address_3) + ")"
 
     def write_to_file(self):
         output_file = open(self.address, "w")
@@ -126,6 +126,16 @@ class CodeGenerator:
         elif sign == "#jp":
             pc = self.semantic_stack.pop()
             self.program_block.add_line_with_pc(pc, "JP", str(self.program_block.cur_program_counter))
+
+        elif sign == "#while":
+            pc = self.semantic_stack.pop()
+            condition = self.semantic_stack.pop()
+            label = self.semantic_stack.pop()
+            self.program_block.add_line_with_pc(pc, "JPF", condition, str(self.program_block.cur_program_counter + 1))
+            self.program_block.add_line("JP", label)
+
+        elif sign == "#label":
+            self.semantic_stack.append(self.program_block.cur_program_counter)
 
     def write_output(self):
         self.program_block.write_to_file()

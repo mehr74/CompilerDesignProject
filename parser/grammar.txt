@@ -14,8 +14,8 @@ compound-stmt → { declaration-list statement-list }
 statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
 expression-stmt → expression ; | continue ; | break ; | ;
-selection-stmt → if ( expression ) statement else statement
-iteration-stmt → while ( expression ) statement
+selection-stmt → if ( expression #save ) statement #jpf_save else statement #jp
+iteration-stmt → while ( #label expression ) #save statement #while
 return-stmt → return return-stmt-a
 return-stmt-a → ; | expression ;
 switch-stmt → switch ( expression ) { case-stmts default-stmt }
@@ -32,7 +32,7 @@ additive-expression → term additive-expression-a
 additive-expression-a → addop term #add additive-expression-a | ε
 addop → + | -
 term → factor term-a
-term-a → * factor term-a | ε
+term-a → * factor #mult term-a | ε
 factor → ( expression ) | ID #pid factor-a | NUM #push_imm
 factor-a → var | call
 call → ( args )
