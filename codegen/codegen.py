@@ -9,14 +9,21 @@ class ProgramBlock:
         self._program_block.append("(" + op + ", " + address_1 + ", " + address_2 + ", " + address_3 + ")")
         self.cur_program_counter = self.cur_program_counter + 1
 
+    def add_line_with_pc(self, pc, op, address_1, address_2="", address_3=""):
+        self._program_block[pc] = "(" + op + ", " + address_1 + ", " + address_2 + ", " + address_3 + ")"
+
     def write_to_file(self):
         output_file = open(self.address, "w")
-        for line in self._program_block:
+        for idx, line in enumerate(self._program_block):
+            output_file.write(str(idx) + "\t")
             output_file.write(line + "\n")
         output_file.close()
 
-
-
+    def increment_program_counter(self):
+        self._program_block.append("")
+        address = self.cur_program_counter
+        self.cur_program_counter = self.cur_program_counter + 1
+        return address
 
 
 class Symbol:
@@ -104,6 +111,21 @@ class CodeGenerator:
 
         elif sign == "#push_imm":
             self.semantic_stack.append("#" + str(token))
+
+        elif sign == "#save":
+            address = self.program_block.increment_program_counter()
+            self.semantic_stack.append(address)
+
+        elif sign == "#jpf_save":
+            pc = self.semantic_stack.pop()
+            condition = self.semantic_stack.pop()
+            self.program_block.add_line_with_pc(pc, "JPF", condition, str(self.program_block.cur_program_counter + 1))
+            self.semantic_stack.append(self.program_block.cur_program_counter)
+            self.program_block.increment_program_counter()
+
+        elif sign == "#jp":
+            pc = self.semantic_stack.pop()
+            self.program_block.add_line_with_pc(pc, "JP", str(self.program_block.cur_program_counter))
 
     def write_output(self):
         self.program_block.write_to_file()
