@@ -1,16 +1,16 @@
-program → declaration-list EOF
+program → declaration-list #jp_main EOF
 declaration-list → declaration declaration-list | ε
 declaration → type-specifier ID #id declaration-a
-declaration-a → var-declaration | fun-declaration
+declaration-a → var-declaration #set_to_var | fun-declaration #set_to_func
 var-declaration → ; | [ NUM ] ;
-type-specifier → int | void
-fun-declaration → ( params ) compound-stmt
-params → void params-a | int ID param-a param-list
-params-a → ID param-a param-list | ε
+type-specifier → int #push_int | void #push_void
+fun-declaration → #inc_scope ( params ) compound-stmt #dec_scope
+params → void params-a | int ID param-a #save_symbol param-list
+params-a → ID param-a #save_symbol param-list | ε
 param-list → , param param-list | ε
 param → type-specifier ID param-a
 param-a → ε | [ ]
-compound-stmt → { declaration-list statement-list }
+compound-stmt → #inc_scope { declaration-list statement-list } #dec_scope
 statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
 expression-stmt → expression ; | continue ; | break #break_save ; | ;
@@ -33,7 +33,7 @@ additive-expression-a → addop term #add additive-expression-a | ε
 addop → + #push_plus | - #push_minus
 term → factor term-a
 term-a → * factor #mult term-a | ε
-factor → ( expression ) | ID #pid factor-a | NUM #push_imm
+factor → ( expression ) | ID #p_get_addr factor-a | NUM #push_imm
 factor-a → var | call
 call → ( #push_arg args ) #call
 args → arg-list | ε

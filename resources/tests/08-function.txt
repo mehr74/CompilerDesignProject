@@ -1,0 +1,18 @@
+int myfunc1(int a, int b, int c) {
+    int a;
+    int b;
+    int c;
+	output(a);
+	output(b);
+	output(c);
+}
+
+int main(void)
+{
+	int a;
+	int b;
+	a = 1;
+	b = 2;
+	myfunc(a, b, 3);
+}
+
