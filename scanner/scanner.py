@@ -21,10 +21,11 @@ class Scanner:
     def __init__(self, code_address):
         local_fsm, self._state_funcs, self._keywords = self._define_lang()
         self._fsm = self._bake_fsm(local_fsm)
-        self._last_term = (None, None)
+        self._last_term = (None, None, 0)
         self._cur_token_str = ""
         self._code = _get_code(code_address)
         self._current_char = self._code.__next__()
+        self._scope = 0
         if self._current_char is None:
             raise Exception("Code is empty!")
 
@@ -71,10 +72,10 @@ class Scanner:
 
     def get_token(self):
         if self._current_char is None:
-            if self._last_term == ("EOF", "EOF"):
+            if self._last_term[0] == "EOF":
                 warn("End of file")
                 return self._last_term
-            self._last_term = ("EOF", "EOF")
+            self._last_term = ("EOF", "EOF", self._scope)
             self._cur_token_str = ""
             return self._last_term
         state = 0
@@ -87,17 +88,22 @@ class Scanner:
                     break
 
     def _token_operator(self):
-        self._last_term = (self._cur_token_str, self._cur_token_str)
+        if self._cur_token_str == '}':
+            self._scope -= 1
+        self._last_term = (self._cur_token_str, self._cur_token_str, self._scope)
+        if self._cur_token_str == '{':
+            self._scope += 1
         self._cur_token_str = ""
         return self._last_term
 
     def _token_id_or_keyword(self):
-        self._last_term = (self._cur_token_str if self._cur_token_str in self._keywords else 'ID', self._cur_token_str)
+        self._last_term = (self._cur_token_str if self._cur_token_str in self._keywords else 'ID',
+                           self._cur_token_str, self._scope)
         self._cur_token_str = ""
         return self._last_term
 
     def _token_num(self):
-        self._last_term = ("NUM", int(self._cur_token_str))
+        self._last_term = ("NUM", int(self._cur_token_str), self._scope)
         self._cur_token_str = ""
         return self._last_term
 
