@@ -2,13 +2,18 @@ int main(void)
 {
     int a;
     int b;
-    a = 10;
+    a = 0;
     if(a)
     {
         b = 3;
     }
     else
     {
+        int a;
+        a = 3;
         b = 10;
+        output(a);
     }
+    output(a);
+    output(b);
 }

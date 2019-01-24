@@ -4,6 +4,7 @@ int main(void)
     a = 10;
     while(a)
     {
-        a = a + 1 + a + 1;
+        output(a);
+        a = a - 1;
     }
 }
