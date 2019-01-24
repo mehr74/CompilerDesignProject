@@ -1,15 +1,15 @@
 program → declaration-list #jp_main EOF
 declaration-list → declaration declaration-list | ε
 declaration → type-specifier ID #id declaration-a
-declaration-a → var-declaration #set_to_var | fun-declaration #set_to_func
+declaration-a → var-declaration #set_to_var | fun-declaration #set_to_func_return
 var-declaration → ; | [ NUM ] ;
 type-specifier → int #push_int | void #push_void
-fun-declaration → ( #inc_scope params ) compound-stmt #dec_scope
-params → void params-a | int ID param-a #save_symbol param-list
-params-a → ID param-a #save_symbol param-list | ε
+fun-declaration → ( #inc_scope_push_zero params #set_param_num ) compound-stmt #dec_scope
+params → void params-a | int #push_int ID #id param-a param-list
+params-a → ID #id param-a param-list | ε
 param-list → , param param-list | ε
-param → type-specifier ID param-a
-param-a → ε | [ ]
+param → type-specifier ID #id param-a
+param-a → ε #set_scalar_param | [ ] #set_to_var
 compound-stmt → { #inc_scope declaration-list statement-list } #dec_scope
 statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt

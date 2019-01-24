@@ -67,13 +67,16 @@ class SymbolTable:
                 return symbol
         return None
 
-    def find_symbol(self, name, scope, func_var):
+    def find_symbol(self, name, scope, func_var=None):
         symbol = self._search_by_symbol(name, scope)
         if symbol is None:
             print("ERROR: Symbol " + name + " not defined!")
             return None
+        elif func_var is None:
+            return symbol
         elif symbol.func_var != func_var:
             print("ERROR: Symbol {} is a {}".format(name, "function" if symbol.func_var else "variable"))
+            return None
         else:
             return symbol
 
@@ -173,7 +176,7 @@ class CodeGenerator:
 
         functions = {
             "#id": self.id,                                   # add to symbol table only
-            "#set_to_func": self.set_to_func,
+            "#set_to_func_return": self.set_to_func_return,
             "#set_to_var": self.set_to_var,
             "#push_int":  self.push_int,                      # add to symbol table only
             "#push_void":     self.push_void,                 # add to symbol table only
@@ -203,10 +206,16 @@ class CodeGenerator:
             "#push_while": self.push_while,
             "#push_equal_to": self.push_equal_to,
             "#push_less_than": self.push_less_than,
-            "#relop": self.relop
+            "#relop": self.relop,
+            "#set_scalar_param": self.set_scalar_param,
+            "#inc_scope_push_zero": self.inc_scope_push_zero
         }
         if func in functions:
             functions[func](name, scope)
+
+    def inc_scope_push_zero(self, name, scope):
+        self.inc_scope(name, scope)
+        self._semantic_stack.append("0")
 
     def relop(self, name, scope):
         operand_2 = self._semantic_stack.pop()
@@ -252,7 +261,7 @@ class CodeGenerator:
         args= [self._semantic_stack.pop()]
         while "ARG" not in args:
             args.append(self._semantic_stack.pop())
-        args.pop() # remove arg from arguments
+        args.pop()                                       # remove arg from arguments
 
         func = self._semantic_stack.pop()
         symbol = self._symbol_table.find_symbol_by_address(func)
@@ -438,7 +447,7 @@ class CodeGenerator:
 
     def pid(self, name, scope):
         self._semantic_stack.append(self._symbol_table
-                                    .find_symbol(name, scope, func_var=False)
+                                    .find_symbol(name, scope)
                                     .address)
 
     def push_void(self, name, scope):
@@ -450,10 +459,33 @@ class CodeGenerator:
     def set_to_var(self, name, scope):
         self._semantic_stack.pop()
 
-    def set_to_func(self, name, scope):
+    def set_to_func_return(self, name, scope):
+        arg_num = self._semantic_stack.pop()
         symbol = self._semantic_stack.pop()
-        print("HERE: {}".format(symbol))
+        if not (symbol[0] == "main" and symbol[1] == 0):
+            temp_1 = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("SUB", self.sp, "#" + str(arg_num * 4), temp_1)
+            self._program_block.add_line("ASSIGN", temp_1, self.sp)
+            temp_2 = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp_2)
+            temp_3 = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("SUB", self.sp, "#4", temp_3)
+            self._program_block.add_line("ASSIGN", temp_3, self.sp)
+            self._program_block.add_line("PRINT", temp_2)
+            self._program_block.add_line("JP", "@" + temp_2)
         self._symbol_table.change_symbol_func_var(symbol[0], int(symbol[1]), target_func_var=True)
+
+    def set_scalar_param(self, name, scope):
+        symbol = self._semantic_stack.pop()
+        symbol = self._symbol_table.find_symbol(symbol[0], int(symbol[1]), False)
+        arg_num = int(self._semantic_stack.pop())
+        self._semantic_stack.append(arg_num + 1)
+        temp = self._symbol_table.new_temp_symbol_address()
+        if arg_num != 0:
+            self._program_block.add_line("SUB", str(self.sp), "#" + str(arg_num * 4), temp)
+            self._program_block.add_line("ASSIGN", "@" + str(temp), str(symbol.address))
+        else:
+            self._program_block.add_line("ASSIGN", "@" + str(self.sp), str(symbol.address))
 
     def id(self, name, scope): # todo: fixme
         self._symbol_table.add_symbol(type=self._semantic_stack.pop(),

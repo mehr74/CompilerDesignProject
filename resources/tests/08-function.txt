@@ -1,7 +1,4 @@
-int myfunc1(int a, int b, int c) {
-    int a;
-    int b;
-    int c;
+void myfunc1(int a, int b, int c) {
 	output(a);
 	output(b);
 	output(c);
@@ -11,8 +8,10 @@ int main(void)
 {
 	int a;
 	int b;
-	a = 1;
+	int c;
+	a = 113;
 	b = 2;
-	myfunc(a, b, 3);
+	myfunc1(a, b, 7);
+    output(a);
 }
 

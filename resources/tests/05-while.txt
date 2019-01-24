@@ -19,6 +19,4 @@ int main(void)
     }
     output(a)
     output(c)
-
-
 }
