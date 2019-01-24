@@ -200,10 +200,35 @@ class CodeGenerator:
             "#jp_break_pop": self.jp_break_pop,
             "#push_switch": self.push_switch,
             "#break_save": self.break_save,
-            "#push_while": self.push_while
+            "#push_while": self.push_while,
+            "#push_equal_to": self.push_equal_to,
+            "#push_less_than": self.push_less_than,
+            "#relop": self.relop
         }
         if func in functions:
             functions[func](name, scope)
+
+    def relop(self, name, scope):
+        operand_2 = self._semantic_stack.pop()
+        operation = self._semantic_stack.pop()
+        operand_1 = self._semantic_stack.pop()
+
+        if operation == "less_than":
+            temp = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("SUB", operand_2, operand_1, temp)
+            self._semantic_stack.append(temp)
+        elif operation == "equal_to":
+            temp_1 = self._symbol_table.new_temp_symbol_address()
+            temp_2 = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("SUB", operand_2, operand_1, temp_1)
+            self._program_block.add_line("NOT", temp_1, temp_2)
+            self._semantic_stack.append(temp_2)
+
+    def push_equal_to(self, name, scope):
+        self._semantic_stack.append("equal_to")
+
+    def push_less_than(self, name, scope):
+        self._semantic_stack.append("less_than")
 
     def push_while(self, name, scope):
         self._semantic_stack.append("while")

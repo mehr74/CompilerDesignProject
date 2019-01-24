@@ -26,8 +26,8 @@ expression → ID #pid expression-a | ( expression ) term-a additive-expression-
 expression-a → var expression-b | call term-a additive-expression-a simple-expression
 expression-b → term-a additive-expression-a simple-expression | = expression #assign
 var → ε | [ expression ]
-simple-expression → relop additive-expression | ε
-relop → < | ==
+simple-expression → relop additive-expression #relop | ε
+relop → < #push_less_than | == #push_equal_to
 additive-expression → term additive-expression-a
 additive-expression-a → addop term #add additive-expression-a | ε
 addop → + #push_plus | - #push_minus
