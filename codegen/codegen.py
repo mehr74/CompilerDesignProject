@@ -38,9 +38,9 @@ class Symbol:
 
 class SymbolTable:
     def __init__(self):
-        self._next_local_address = 1000
-        self._next_temp_address = 2000
-        self.sp = 5000
+        self._next_local_address = 200
+        self._next_temp_address = 600
+        self.stack_start_address = 2000
         self._table = {}  # key = (name, scope)
 
     def new_temp_symbol_address(self):
@@ -59,6 +59,12 @@ class SymbolTable:
             key = (name, s)
             if key in self._table:
                 return self._table[(name, s)]
+        return None
+
+    def find_symbol_by_address(self, address):
+        for key, symbol in self._table.items():
+            if str(symbol.address) == str(address):
+                return symbol
         return None
 
     def find_symbol(self, name, scope, func_var):
@@ -80,11 +86,18 @@ class SymbolTable:
             return str(self._new_local_symbol(type, name, scope, program_block_addr).address)
 
     def print_symbols(self):
-        print("Symbol".rjust(32) + "\t " + "Scope".rjust(10) + " \t " + "Address".rjust(10))
+        print("Symbol".rjust(32) + "\t " +
+              "Scope".rjust(10) + " \t " +
+              "Memory Address".rjust(16) + " \t " +
+              "Type".rjust(10) + " \t " +
+              "Program Block Address".rjust(10))
         for key, symbol in self._table.items():
             print(
-                str(symbol.name).rjust(32) + " \t " + str(symbol.scope).rjust(10) + " \t " + str(symbol.address).rjust(
-                    10))
+                str(symbol.name).rjust(32) + " \t " +
+                str(symbol.scope).rjust(10) + " \t " +
+                str(symbol.address).rjust(16) + " \t " +
+                str(symbol.type).rjust(10) + " \t " +
+                str(symbol.program_block_addr).rjust(10))
 
     def change_symbol_func_var(self, name, scope, target_func_var):
         symbol = self._search_by_symbol(name, scope)
@@ -102,7 +115,9 @@ class CodeGenerator:
         self._symbol_table = SymbolTable()
         self._program_block = ProgramBlock(address)
         self._scope = 0
+        self.sp = self._symbol_table.new_temp_symbol_address()
 
+        self._program_block.add_line("ASSIGN", "#" + str(self._symbol_table.stack_start_address), self.sp)
         self._semantic_stack.append(self._program_block.increment_program_counter())  # for jumping to main
         self._generate_output_method()
 
@@ -113,35 +128,35 @@ class CodeGenerator:
                                       program_block_addr=self._program_block.cur_program_counter)
         tmp = self._symbol_table.new_temp_symbol_address()
         self._program_block.add_line("ASSIGN",
-                                     "@{}".format(self._symbol_table.sp),
+                                     "@{}".format(self.sp),
                                      tmp)
 
         tmp2 = self._symbol_table.new_temp_symbol_address()
         self._program_block.add_line("SUB",
-                                     self._symbol_table.sp,
+                                     self.sp,
                                      '#4',
                                      tmp2)
         self._program_block.add_line("ASSIGN",
                                      tmp2,
-                                     "@{}".format(self._symbol_table.sp)
+                                     self.sp
                                      )
 
         self._program_block.add_line("PRINT", tmp)
         tmp = self._symbol_table.new_temp_symbol_address()
         self._program_block.add_line("ASSIGN",
-                                     "@{}".format(self._symbol_table.sp),
+                                     "@{}".format(self.sp),
                                      tmp)
 
         self._program_block.add_line("SUB",
-                                     self._symbol_table.sp,
+                                     self.sp,
                                      '#4', tmp2)
         self._program_block.add_line("ASSIGN",
                                      tmp2,
-                                     "@{}".format(self._symbol_table.sp)
+                                     self.sp
                                      )
 
         self._program_block.add_line("JP",
-                                     tmp)
+                                     "@" + str(tmp))
 
     def generate_code(self, func, token):
         if func == "":
@@ -151,6 +166,7 @@ class CodeGenerator:
             print(entry)
         print("Token : " + str(token))
         print("Func : " + func)
+        print("Scope : " + str(self._scope))
         print("\n")
         name = token[1]
         scope = self._scope
@@ -209,12 +225,39 @@ class CodeGenerator:
             entry = self._semantic_stack.pop()
 
     def call(self, name, scope):
-        args = [self._semantic_stack.pop()]
+        args= [self._semantic_stack.pop()]
         while "ARG" not in args:
             args.append(self._semantic_stack.pop())
+        args.pop() # remove arg from arguments
+
         func = self._semantic_stack.pop()
-        if func == "output" and (len(args) == 2):
-            self._program_block.add_line("PRINT", args[0])
+        symbol = self._symbol_table.find_symbol_by_address(func)
+
+        if symbol.type == "int":
+            temp = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("ADD", self.sp, "#4", temp)
+            self._program_block.add_line("ASSIGN", temp, str(self.sp))
+
+        temp = self._symbol_table.new_temp_symbol_address()
+        self._program_block.add_line("ADD", str(self.sp), "#4", temp)
+        self._program_block.add_line("ASSIGN", temp, str(self.sp))
+        # jump line = current program counter + next assignment statement + push args statement + jump to func
+        jump_line = self._program_block.cur_program_counter + 1 + len(args) * 3 + 1
+        self._program_block.add_line("ASSIGN", "#" + str(jump_line), "@" + str(self.sp))
+
+        for arg in args:
+            temp = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("ADD", str(self.sp), "#4", temp)
+            self._program_block.add_line("ASSIGN", temp, str(self.sp))
+            self._program_block.add_line("ASSIGN", arg, "@" + str(self.sp))
+
+        self._program_block.add_line("JP", symbol.program_block_addr)
+        if symbol.type == "int":
+            temp = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp)
+            self._semantic_stack.append(temp)
+
+
 
     def push_arg(self, name, scope):
         self._semantic_stack.append("ARG")
