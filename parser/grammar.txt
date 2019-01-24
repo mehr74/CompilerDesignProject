@@ -15,7 +15,7 @@ statement-list → statement statement-list | ε
 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
 expression-stmt → expression ; | continue ; | break #break_save ; | ;
 selection-stmt → if ( expression #save ) statement #jpf_save else statement #jp
-iteration-stmt → while ( #label expression ) #save statement #while
+iteration-stmt → while #push_while ( #label expression ) #save statement #while_break_pop
 return-stmt → return return-stmt-a
 return-stmt-a → ; | expression ;
 switch-stmt → switch ( #push_switch expression ) { case-stmts default-stmt } #jp_break_pop

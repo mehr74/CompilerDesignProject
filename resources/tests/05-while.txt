@@ -1,10 +1,22 @@
 int main(void)
 {
     int a;
+    int c;
     a = 10;
+    c = 11;
     while(a)
     {
+        int c;
         output(a);
-        a = a - 1;
+        if(a)
+        {
+            output(a);
+            a = a - 1;
+            break;
+        }
+        else ;
+        c = 12
     }
+    output(a)
+    output(c)
 }

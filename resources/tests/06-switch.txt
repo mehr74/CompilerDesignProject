@@ -3,7 +3,7 @@ int main(void)
     int c;
     int a;
     a = 10;
-    c = 2;
+    c = 4;
     switch(c){
         case 1:
             c = a;

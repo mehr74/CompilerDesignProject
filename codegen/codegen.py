@@ -11,7 +11,7 @@ class ProgramBlock:
             self._program_block.append(code)
             self.cur_program_counter = self.cur_program_counter + 1
         else:
-            self._program_block[pc] = code
+            self._program_block[int(pc)] = code
 
     def write_to_file(self):
         with open(self._address, "w") as output_file:
@@ -189,7 +189,7 @@ class CodeGenerator:
             "#save": self.save,
             "#jpf_save": self.jpf_save,
             "#jp": self.jp,
-            "#while": self.while_func,
+            "#while_break_pop": self.while_break_pop,
             "#label": self.label,
             "#cmp_save": self.cmp_save,
             "#jpf": self.jpf,
@@ -200,29 +200,28 @@ class CodeGenerator:
             "#jp_break_pop": self.jp_break_pop,
             "#push_switch": self.push_switch,
             "#break_save": self.break_save,
+            "#push_while": self.push_while
         }
         if func in functions:
             functions[func](name, scope)
 
+    def push_while(self, name, scope):
+        self._semantic_stack.append("while")
+
     def break_save(self, name, scope):
-        case_address = self._semantic_stack.pop()
-        case_condition = self._semantic_stack.pop()
-        switch_condition = self._semantic_stack.pop()
         break_address = self._program_block.increment_program_counter()
-        self._semantic_stack.append(break_address)
-        self._semantic_stack.append(switch_condition)
-        self._semantic_stack.append(case_condition)
-        self._semantic_stack.append(case_address)
+        self._semantic_stack.append("break" + str(break_address))
 
     def push_switch(self, name, scope):
         self._semantic_stack.append("switch")
 
     def jp_break_pop(self, name, scope):
-        self._semantic_stack.pop()
-        entry = self._semantic_stack.pop()
+        entry = str(self._semantic_stack.pop())
         while entry != "switch":
-            self._program_block.add_line("JP", self._program_block.cur_program_counter, pc=entry)
-            entry = self._semantic_stack.pop()
+            if entry.startswith("break"):
+                break_line = int(entry[5:])
+                self._program_block.add_line("JP", self._program_block.cur_program_counter, pc=break_line)
+            entry = str(self._semantic_stack.pop())
 
     def call(self, name, scope):
         args= [self._semantic_stack.pop()]
@@ -257,8 +256,6 @@ class CodeGenerator:
             self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp)
             self._semantic_stack.append(temp)
 
-
-
     def push_arg(self, name, scope):
         self._semantic_stack.append("ARG")
 
@@ -269,13 +266,32 @@ class CodeGenerator:
         self._semantic_stack.append("ADD")
 
     def jpf(self, name, scope):
-        pc = self._semantic_stack.pop()
-        condition = self._semantic_stack.pop()
+        pc = str(self._semantic_stack.pop())
+        breaks = []
+        while pc.startswith("break"):
+            breaks.append(pc)
+            pc = str(self._semantic_stack.pop())
+
+        condition = str(self._semantic_stack.pop())
+        while condition.startswith("break"):
+            breaks.append(condition)
+            condition = str(self._semantic_stack.pop())
+
         self._program_block.add_line("JPF", condition, str(self._program_block.cur_program_counter), pc=pc)
+
+        for bk in breaks:
+            self._semantic_stack.append(bk)
 
     def cmp_save(self, name, scope):
         num = name
-        switch = self._semantic_stack.pop()
+        breaks = []
+        switch = str(self._semantic_stack.pop())
+        while switch.startswith("break"):
+            breaks.append(switch)
+            switch = str(self._semantic_stack.pop())
+        for bk in breaks:
+            self._semantic_stack.append(bk)
+
         temp_1 = self._symbol_table.new_temp_symbol_address()
         self._program_block.add_line("SUB", switch, "#" + str(num), temp_1)
         temp_2 = self._symbol_table.new_temp_symbol_address()
@@ -288,27 +304,59 @@ class CodeGenerator:
     def label(self, name, scope):
         self._semantic_stack.append(self._program_block.cur_program_counter)
 
-    def while_func(self, name, scope):
-        pc = self._semantic_stack.pop()
-        condition = self._semantic_stack.pop()
-        label = self._semantic_stack.pop()
-        self._program_block.add_line("JPF", condition, str(self._program_block.cur_program_counter + 1), pc=pc)
-        self._program_block.add_line("JP", label)
+    def while_break_pop(self, name, scope):
+        entry = str(self._semantic_stack.pop())
+        pc = -1
+        condition = -1
+        label = -1
+        while entry != "while":
+            if entry.startswith("break"):
+                break_line = int(entry[5:])
+                self._program_block.add_line("JP", str(self._program_block.cur_program_counter + 1), pc=break_line)
+            elif pc == -1:
+                pc = entry
+            elif condition == -1:
+                condition = entry
+            elif label == -1:
+                label = entry
+                self._program_block.add_line("JPF", condition, str(self._program_block.cur_program_counter + 1), pc=pc)
+                self._program_block.add_line("JP", label)
+
+            entry = str(self._semantic_stack.pop())
 
     def jp(self, name, scope):
-        pc = self._semantic_stack.pop()
+        breaks = []
+        pc = str(self._semantic_stack.pop())
+        while pc.startswith("break"):
+            breaks.append(pc)
+            pc = str(self._semantic_stack.pop())
+
         self._program_block.add_line("JP",
                                      str(self._program_block.cur_program_counter),
                                      pc=pc)
 
+        for bk in breaks:
+            self._semantic_stack.append(bk)
+
     def jpf_save(self, name, scope):
-        pc = self._semantic_stack.pop()
-        condition = self._semantic_stack.pop()
+        breaks = []
+        pc = str(self._semantic_stack.pop())
+        while pc.startswith("break"):
+            breaks.append(pc)
+            pc = str(self._semantic_stack.pop())
+
+        condition = str(self._semantic_stack.pop())
+        while condition.startswith("break"):
+            breaks.append(condition)
+            condition = str(self._semantic_stack.pop())
+
         self._program_block.add_line("JPF",
                                      condition,
                                      str(self._program_block.cur_program_counter + 1),
                                      pc=pc)
         self._semantic_stack.append(self._program_block.increment_program_counter())
+        for bk in breaks:
+            self._semantic_stack.append(bk)
 
     def save(self, name, scope):
         self._semantic_stack.append(self._program_block.increment_program_counter())
