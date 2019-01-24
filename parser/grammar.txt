@@ -2,7 +2,7 @@ program → declaration-list #jp_main EOF
 declaration-list → declaration declaration-list | ε
 declaration → type-specifier ID #id declaration-a
 declaration-a → var-declaration #set_to_var | fun-declaration #set_to_func_return
-var-declaration → ; | [ NUM ] ;
+var-declaration → ; | [ NUM #add_to_stack ] ;
 type-specifier → int #push_int | void #push_void
 fun-declaration → ( #inc_scope_push_zero params #set_param_num ) compound-stmt #dec_scope
 params → void params-a | int #push_int ID #id param-a param-list
@@ -25,7 +25,7 @@ default-stmt → default : statement-list | ε
 expression → ID #pid expression-a | ( expression ) term-a additive-expression-a simple-expression | NUM #push_imm term-a additive-expression-a simple-expression
 expression-a → var expression-b | call term-a additive-expression-a simple-expression
 expression-b → term-a additive-expression-a simple-expression | = expression #assign
-var → ε | [ expression ]
+var → ε | [ expression #index_array ]
 simple-expression → relop additive-expression #relop | ε
 relop → < #push_less_than | == #push_equal_to
 additive-expression → term additive-expression-a

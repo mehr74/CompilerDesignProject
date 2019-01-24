@@ -208,10 +208,33 @@ class CodeGenerator:
             "#push_less_than": self.push_less_than,
             "#relop": self.relop,
             "#set_scalar_param": self.set_scalar_param,
-            "#inc_scope_push_zero": self.inc_scope_push_zero
+            "#inc_scope_push_zero": self.inc_scope_push_zero,
+            "#add_to_stack": self.add_to_stack,
+            "#index_array": self.index_array
         }
         if func in functions:
             functions[func](name, scope)
+
+    def index_array(self, name, scope):
+        index = self._semantic_stack.pop()
+        array = self._semantic_stack.pop()
+        if int(index) != 0:
+            temp_1 = self._symbol_table.new_temp_symbol_address()
+            temp_2 = self._symbol_table.new_temp_symbol_address()
+            self._program_block.add_line("MULT", index, "#4", temp_1)
+            self._program_block.add_line("SUB", array, index, temp_2)
+            self._semantic_stack.append("@" + str(temp_2))
+        else:
+            self._semantic_stack.append("@" + str(array))
+
+    def add_to_stack(self, name, scope):
+        symbol = self._semantic_stack.pop()
+        self._semantic_stack.append(symbol)
+        symbol = self._symbol_table.find_symbol(symbol[0], symbol[1], False)
+        temp = self._symbol_table.new_temp_symbol_address()
+        self._program_block.add_line("ADD", self.sp, "#" + str(4*name), temp)
+        self._program_block.add_line("ASSIGN", temp, str(self.sp))
+        self._program_block.add_line("ASSIGN", self.sp, symbol.address)
 
     def inc_scope_push_zero(self, name, scope):
         self.inc_scope(name, scope)
