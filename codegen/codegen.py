@@ -240,6 +240,7 @@ class CodeGenerator:
             "#set_scalar_param": self.set_scalar_param,
             "#inc_scope_push_zero": self.inc_scope_push_zero,
             "#add_to_stack": self.add_to_stack,
+            "#pop_one": self.pop_one,
             "#index_array": self.index_array,
             "#func_return": self.func_return
         }
@@ -252,6 +253,9 @@ class CodeGenerator:
                 symbol = self._symbol_table.find_symbol(entry[0], entry[1])
                 if symbol.type == "int":
                     ret_value = self._semantic_stack.pop()
+
+    def pop_one(self, name, scope):
+        self._semantic_stack.pop()
 
     def index_array(self, name, scope):
         index = self._semantic_stack.pop()
@@ -350,6 +354,8 @@ class CodeGenerator:
             temp = self._symbol_table.new_temp_symbol_address()
             self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp)
             self._semantic_stack.append(temp)
+        else:
+            self._semantic_stack.append("void")
 
     def push_arg(self, name, scope):
         self._semantic_stack.append("ARG")
@@ -479,9 +485,12 @@ class CodeGenerator:
         self._semantic_stack.append(temp)
 
     def assign(self, name, scope):
+        rhs = self._semantic_stack.pop()
+        lhs = self._semantic_stack.pop()
         self._program_block.add_line("ASSIGN",
-                                     self._semantic_stack.pop(),
-                                     self._semantic_stack.pop())
+                                     rhs,
+                                     lhs)
+        self._semantic_stack.append(rhs)
 
     def dec_scope(self, name, scope):
         self._symbol_table.dec_scope()

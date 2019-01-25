@@ -7,6 +7,7 @@
 * Semantic Analysis : Functions with int return type with no return
 * Semantic Analysis : Function calls does not match the prototype
 * Semantic Analysis : No void variable
+* Semantic Analysis : Avoid assignment to void
 -----
 * Code Generation : Test arrays for multiple arrays tests
 * Code Generation : Test function call for multiple tests
