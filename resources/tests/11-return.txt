@@ -9,5 +9,5 @@ int myfunc(int a)
 
 int main(void)
 {
-    output(myfunc(4))
+    output(myfunc(10))
 }

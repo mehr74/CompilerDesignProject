@@ -247,11 +247,32 @@ class CodeGenerator:
             functions[func](name, scope)
 
     def func_return(self, name, scope):
+        prev_entry = None
         for entry in reversed(self._semantic_stack):
             if type(entry) is tuple:
                 symbol = self._symbol_table.find_symbol(entry[0], entry[1])
+                arg_num = prev_entry
                 if symbol.type == "int":
                     ret_value = self._semantic_stack.pop()
+
+                    temp_1 = self._symbol_table.new_temp_symbol_address()
+                    self._program_block.add_line("SUB", self.sp, "#" + str(arg_num * 4), temp_1)
+                    self._program_block.add_line("ASSIGN", temp_1, self.sp)
+
+                    temp_2 = self._symbol_table.new_temp_symbol_address()                          # return address
+                    self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp_2)
+
+                    temp_3 = self._symbol_table.new_temp_symbol_address()
+                    self._program_block.add_line("SUB", self.sp, "#4", temp_3)                     # pop return address
+                    self._program_block.add_line("ASSIGN", temp_3, self.sp)
+
+                    temp_4 = self._symbol_table.new_temp_symbol_address()                          # return value
+                    self._program_block.add_line("SUB", self.sp, "#4", temp_4)
+                    self._program_block.add_line("ASSIGN", temp_4, self.sp)
+                    self._program_block.add_line("ASSIGN", ret_value, "@" + str(self.sp))
+
+                    self._program_block.add_line("JP", "@" + temp_2)
+            prev_entry = entry
 
     def index_array(self, name, scope):
         index = self._semantic_stack.pop()
@@ -532,7 +553,6 @@ class CodeGenerator:
             temp_3 = self._symbol_table.new_temp_symbol_address()
             self._program_block.add_line("SUB", self.sp, "#4", temp_3)
             self._program_block.add_line("ASSIGN", temp_3, self.sp)
-            self._program_block.add_line("PRINT", temp_2)
             self._program_block.add_line("JP", "@" + temp_2)
         self._symbol_table.change_symbol_func_var(symbol[0], int(symbol[1]), target_func_var=True)
 
