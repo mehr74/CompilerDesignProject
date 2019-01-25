@@ -1,0 +1,13 @@
+int myfunc(int a)
+{
+    if(a < 10)
+        return 3;
+    else
+        return 2;
+}
+
+
+int main(void)
+{
+    output(myfunc(4))
+}

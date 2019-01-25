@@ -4,7 +4,7 @@ declaration → type-specifier ID #id declaration-a
 declaration-a → var-declaration #set_to_var | fun-declaration #set_to_func_return
 var-declaration → ; | [ NUM #add_to_stack ] ;
 type-specifier → int #push_int | void #push_void
-fun-declaration → ( #inc_scope_push_zero params #set_param_num ) compound-stmt #dec_scope
+fun-declaration → ( #inc_scope_push_zero params #set_param_num ) compound-stmt
 params → void params-a | int #push_int ID #id param-a param-list
 params-a → ID #id param-a param-list | ε
 param-list → , param param-list | ε
@@ -16,7 +16,7 @@ statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt 
 expression-stmt → expression ; | continue ; | break #break_save ; | ;
 selection-stmt → if ( expression #save ) statement #jpf_save else statement #jp
 iteration-stmt → while #push_while ( #label expression ) #save statement #while_break_pop
-return-stmt → return return-stmt-a
+return-stmt → return return-stmt-a #func_return
 return-stmt-a → ; | expression ;
 switch-stmt → switch ( #push_switch expression ) { case-stmts default-stmt } #jp_break_pop
 case-stmts → case-stmt #jpf case-stmts | ε

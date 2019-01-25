@@ -1,11 +1,15 @@
+* Code Generation : Functions semicolon
+* Code Generation : Functions access link
 * Code Generation : Functions handle return 
-* Code Generation : Test Function call multiple tests
 * Code Generation : Handle recursive functions
+-----
+* Parser : Handle parse errors 
 * Semantic Analysis : Functions with int return type with no return
-* Code Generation : Handle Arrays
+* Semantic Analysis : Function calls does not match the prototype
+* Semantic Analysis : No void variable
+-----
+* Code Generation : Test arrays for multiple arrays tests
+* Code Generation : Test function call for multiple tests
 * Code Generation : Test break in switch and while
 * Code Generation : Test break in multi-level while
-* Parser : Handle parse errors 
-* Semantic Analysis : No void variable
-* Semantic Analysis : Function calls does not match the prototype
-* Code Generation : Fix scopes - same scope for {} {} in if else while ...
+* Code Generation : Test scopes - same scope for {} {} in if else while ...

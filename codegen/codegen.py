@@ -41,7 +41,34 @@ class SymbolTable:
         self._next_local_address = 200
         self._next_temp_address = 600
         self.stack_start_address = 2000
+        self._scope_stack = []
+        self._last_scope_id = 0
+        self._last_scope_type = False                # func_compound
+        self.inc_scope()
         self._table = {}  # key = (name, scope)
+
+    def get_scope(self):
+        print("Scope Stack:")
+        for scope in self._scope_stack:
+            print(scope)
+        print("-------------")
+        return self._scope_stack[-1]
+
+    def inc_scope(self, func_compound=False):
+        if (not func_compound) and self._last_scope_type:
+            self._last_scope_type = False
+            return
+
+        if func_compound:
+            self._last_scope_type = True
+        else:
+            self._last_scope_type = False
+        self._scope_stack.append(self._last_scope_id)
+        self._last_scope_id += 1
+
+    def dec_scope(self):
+        self._scope_stack.pop()
+
 
     def new_temp_symbol_address(self):
         address = self._next_temp_address
@@ -55,7 +82,7 @@ class SymbolTable:
         return symbol
 
     def _search_by_symbol(self, name, scope):
-        for s in range(scope, -1, -1):
+        for s in self._scope_stack:
             key = (name, s)
             if key in self._table:
                 return self._table[(name, s)]
@@ -164,15 +191,18 @@ class CodeGenerator:
     def generate_code(self, func, token):
         if func == "":
             return
+
+        name = token[1]
+        scope = self._symbol_table.get_scope()
+
         print("Semantic Stack : ")
         for entry in self._semantic_stack:
             print(entry)
+        print("-------------")
         print("Token : " + str(token))
         print("Func : " + func)
-        print("Scope : " + str(self._scope))
+        print("Scope : " + str(scope))
         print("\n")
-        name = token[1]
-        scope = self._scope
 
         functions = {
             "#id": self.id,                                   # add to symbol table only
@@ -210,10 +240,18 @@ class CodeGenerator:
             "#set_scalar_param": self.set_scalar_param,
             "#inc_scope_push_zero": self.inc_scope_push_zero,
             "#add_to_stack": self.add_to_stack,
-            "#index_array": self.index_array
+            "#index_array": self.index_array,
+            "#func_return": self.func_return
         }
         if func in functions:
             functions[func](name, scope)
+
+    def func_return(self, name, scope):
+        for entry in reversed(self._semantic_stack):
+            if type(entry) is tuple:
+                symbol = self._symbol_table.find_symbol(entry[0], entry[1])
+                if symbol.type == "int":
+                    ret_value = self._semantic_stack.pop()
 
     def index_array(self, name, scope):
         index = self._semantic_stack.pop()
@@ -237,7 +275,7 @@ class CodeGenerator:
         self._program_block.add_line("ASSIGN", self.sp, symbol.address)
 
     def inc_scope_push_zero(self, name, scope):
-        self.inc_scope(name, scope)
+        self._symbol_table.inc_scope(True)
         self._semantic_stack.append("0")
 
     def relop(self, name, scope):
@@ -446,10 +484,10 @@ class CodeGenerator:
                                      self._semantic_stack.pop())
 
     def dec_scope(self, name, scope):
-        self._scope = self._scope - 1
+        self._symbol_table.dec_scope()
 
     def inc_scope(self, name, scope):
-        self._scope = self._scope + 1
+        self._symbol_table.inc_scope()
 
     def jp_main(self, name, scope):
         symbol = self._symbol_table.find_symbol("main", 0, True)
