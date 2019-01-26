@@ -252,20 +252,20 @@ class CodeGenerator:
             if type(entry) is tuple:
                 symbol = self._symbol_table.find_symbol(entry[0], entry[1])
                 arg_num = prev_entry
+
+                temp_1 = self._symbol_table.new_temp_symbol_address()
+                self._program_block.add_line("SUB", self.sp, "#" + str(arg_num * 4), temp_1)
+                self._program_block.add_line("ASSIGN", temp_1, self.sp)
+
+                temp_2 = self._symbol_table.new_temp_symbol_address()                          # return address
+                self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp_2)
+
+                temp_3 = self._symbol_table.new_temp_symbol_address()
+                self._program_block.add_line("SUB", self.sp, "#4", temp_3)                     # pop return address
+                self._program_block.add_line("ASSIGN", temp_3, self.sp)
+
                 if symbol.type == "int":
                     ret_value = self._semantic_stack.pop()
-
-                    temp_1 = self._symbol_table.new_temp_symbol_address()
-                    self._program_block.add_line("SUB", self.sp, "#" + str(arg_num * 4), temp_1)
-                    self._program_block.add_line("ASSIGN", temp_1, self.sp)
-
-                    temp_2 = self._symbol_table.new_temp_symbol_address()                          # return address
-                    self._program_block.add_line("ASSIGN", "@" + str(self.sp), temp_2)
-
-                    temp_3 = self._symbol_table.new_temp_symbol_address()
-                    self._program_block.add_line("SUB", self.sp, "#4", temp_3)                     # pop return address
-                    self._program_block.add_line("ASSIGN", temp_3, self.sp)
-
                     temp_4 = self._symbol_table.new_temp_symbol_address()                          # return value
                     self._program_block.add_line("SUB", self.sp, "#4", temp_4)
                     self._program_block.add_line("ASSIGN", temp_4, self.sp)

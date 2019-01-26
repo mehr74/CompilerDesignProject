@@ -1,3 +1,10 @@
+int myfun(int a, int b)
+{
+    output(a);
+    return;
+    output(b);
+}
+
 int myfunc(int a)
 {
     if(a < 10)
@@ -9,5 +16,6 @@ int myfunc(int a)
 
 int main(void)
 {
-    output(myfunc(10))
+    output(myfunc(3))
+    myfun(12, 14);
 }
