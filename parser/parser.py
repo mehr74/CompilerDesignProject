@@ -200,12 +200,15 @@ class GrammarParser:
                         first = idx
                     if symbol[0] != '#':
                         last = idx
+
+                assert first == 0
+
                 for idx, symbol in enumerate(symbols):
                     if symbol[0] == '#':
                         self.edges[-1].func = symbol
                         continue
                     if idx == first:
-                        if idx == symbols_count - 1:
+                        if idx == last:
                             self.edges.append(Edge(s_begin, s_end, symbol, False, nt, ""))
                         else:
                             s_mid = State("m")
