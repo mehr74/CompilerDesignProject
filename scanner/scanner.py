@@ -2,9 +2,8 @@ import re
 from warnings import warn
 
 
-def _other():
+def _other()    :
     return True
-
 
 def _get_code(code_address, chunk_size=1024):
     with open(code_address) as code_file:
@@ -36,7 +35,7 @@ class Scanner:
                 2: [('\*', 3), ('[^*]', 2), ],
                 3: [('\*', 3), ('/', 'CMT'), ('[^*/]', 2)],
                 4: [('[A-Za-z0-9]', 4), (_other, 'IK')],
-                5: [('[0-9]', 5), (_other, 'NUM')],
+                5: [('[0-9]', 5), (self._seprator, 'NUM')],
                 6: [(self._must_add, 'OP'), (_other, 7)],
                 7: [('[0-9]', 5)],
                 8: [('=', 'OP'), [_other, 'OP']],
@@ -50,6 +49,11 @@ class Scanner:
 
     def _must_add(self):
         return self._last_term[0] in ['NUM', 'ID'] or self._last_term[1] in [')', ']']
+
+    def _seprator(self):
+        pattern = '[;\[\](){},:<*\s]'
+        p = re.compile(pattern)
+        return self._current_char is not None and p.match(self._current_char) is not None
 
     def _bake_fsm(self, fsm):
         baked_fsm = {}
@@ -80,12 +84,17 @@ class Scanner:
             return self._last_term
         state = 0
         while True:
+            err = True
             for cond, nxt_state in self._fsm[state]:
                 if cond():
                     state = nxt_state
                     if state in self._state_funcs:
                         return self._state_funcs[state]()
+                    err = False
                     break
+            if err:
+                print("Error in scanning state={}".format(state))
+                exit(0)
 
     def _token_operator(self):
         if self._cur_token_str == '}':
